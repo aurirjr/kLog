@@ -489,13 +489,8 @@ export class A implements OnInit, AfterViewInit {
 
     this.resetar_tamanhos_mapa(null);
 
-    let temp_teste_x = $('#root_svg').width();
-    let temp_teste_y = $('#root_svg').height();
-
-    //this.svg_nodes.push(new Node()._x_m(0)._y_m(0));
-    this.svg_nodes.push(new Node()._x_s(this.x_s_middle_center)._y_s(this.y_s_middle_center));
-    this.svg_nodes.push(new Node()._x_s(this.x_s_middle_center - 150)._y_s(this.y_s_middle_center + 200));
-
+    //let temp_teste_x = $('#root_svg').width();
+    //let temp_teste_y = $('#root_svg').height();
     // for(var k = 0; k < 20; k++) {
     //   this.svg_nodes.push(new Node()._x_m((Math.random()*temp_teste_x)-temp_teste_x/2)._y_m((Math.random()*temp_teste_y)-temp_teste_y/2));
     //   this.svg_nodes.push(new Node()._x_m((Math.random()*temp_teste_x)-temp_teste_x/2)._y_m((Math.random()*temp_teste_y)-temp_teste_y/2));
@@ -503,8 +498,6 @@ export class A implements OnInit, AfterViewInit {
     // }
 
 
-    this.svg_texts.push(new Text()._x_s(200)._y_s(400)._text('Quixadá'));
-    this.svg_texts.push(new Text()._x_s(400)._y_s(300)._text('Fortaleza'));
 
   }
 
