@@ -96,7 +96,10 @@ export class Node {
         A.a.link_node_x_s_2 = this.x_s;
         A.a.link_node_y_s_2 = this.y_s;
       } else if (A.a.selected_tool.nome_tool == 'move_hand') {
-        A.a.draggable_element = this;
+        if(!e.ctrlKey && !e.shiftKey) {
+          //Nao dar drag se o usuario estiver usando ctrl ou shift...
+          A.a.draggable_element = this;
+        }
       }
     } else {
       //Se ta clicando com nenhuma tool selecionada, então selecionar azul... Somente este node! remover selecao de todos os outros...

@@ -384,9 +384,6 @@ export class A implements OnInit, AfterViewInit {
                   this.svg_nodes.push(node_clonado_nB);
                 }
 
-                console.log(node_clonado_nA);
-                console.log(node_clonado_nB);
-
                 //Adicionando o clone do edge:
                 this.svg_edges.push(new Edge()._nA(node_clonado_nA)._nB(node_clonado_nB));
               }

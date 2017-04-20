@@ -5,7 +5,7 @@
     </div>
   </div>
 
-  <div [hidden]="!status_logado" style="margin: 0 5px 0 0;  display: flex; justify-content: center; align-items: center; flex: 0.8;
+  <div *ngIf="status_logado && displayName.length > 2" style="margin: 0 5px 0 0;  display: flex; justify-content: center; align-items: center; flex: 0.8;
       z-index: 2">
     <button type="button" class="btn btn-secondary"(click)="show_modal()" style="padding: 0; height: 35px; width: 100%;">
       <div style="display: flex; font-size: 12px; font-weight: bold; display: flex; justify-content: center; align-items: center">
@@ -18,9 +18,22 @@
       </div>
     </button>
   </div>
+  <!--OLD FIREBASE UI-->
+  <!--<div *ngIf="!status_logado" style="margin: -20px 0 0 0px;z-index: 2">-->
+    <!--<div id="firebaseui-auth-container" style="padding: 0; margin: 0;"></div>-->
+  <!--</div>-->
 
-  <div [hidden]="status_logado" style="margin: -20px 0 0 0px;z-index: 2">
-    <div id="firebaseui-auth-container" style="padding: 0; margin: 0;"></div>
+  <div *ngIf="!status_logado" style="margin: 0 5px 0 0;  display: flex; justify-content: center; align-items: center; flex: 0.8; z-index: 2">
+    <button type="button" class="btn btn-secondary"(click)="logar()" style="padding: 0; height: 35px; width: 100%;">
+      <div style="display: flex; font-size: 12px; font-weight: bold; display: flex; justify-content: center; align-items: center">
+        <div style="margin: 0 3px 0 3px">
+          <img class="icon icons8-Google" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAFfUlEQVRoQ+2YbVCUVRTH//eB3WWBRQVHXUqXBD5ovizmgJGCNX2QwNDecLTRytRmbBQaSxwtIXWYwkYoGadBGnvR6ouDFdDoFBCi0GCY+DKpCAIKQmDxtrIvz20eBAJ2n+e5z+4Cwwz7cfece/+/c8499+4hGOcfMs71YwJgrDPotgzQd5EAC9mAFhhhgw6t1BcP+vCmwgQV6YEKJkzBefjQQ+QjnHUHvEsAdCeWopV8ikY6H+3wVCTID1bMIiXwp6+TA7ityHeQsVMAdDcM6ORy8QdvdHbjAT8NKEJJkbMgigFoEpeGKn4netzcAAQQI94hB5GhJCiKAOgWcgVX6VwlGyi2nUcKyRH6DKsfEwAtxGR8Q/7EdTqLdWGX7CKQxJoJNoCXSQua6FSXRLE6L+JySCb/Jqu5LMColE2/WoXiBTdJgN4DW8Ens0YDfrBBT6qgIz9jLp9PNqFE8O29I6ycER10RV/L9bBb0wnxkgC9rbIcNUzdRhAewh1jTT3dzh3FTf41tOMhiJPipQG2cRdRyS+UjX4oqYeeLlN6GfUG6DYpQwDJYwV3pMVhCdFCBIHT1CDPCpy3iTMEk2pyjIbIQo6ggWOAYlUGwG3v3feqDThpxcC7pl9MKKknX4xSW5UIgGOAIk0NCIIG/EwUOG4BaunDr4SaNyJYadmMRCLsAGihygiOq3S42S9WoNDm0qFzN4Q9QLE6BSB7RTe6brtHNllnuFuIs+s5AsgFSLz4gnwmibYksm6of+9SX92xeojbhU+pbDq1a4N+sIU9QJG6EoSIP5MJXU2izLmsctwJEOJzy1Syd5W3NECxRjpiPB9GnrZcHAsAYc/GjxcMCbqDEpIGINE9su+nwXDuzMAEQG9kx7CEHtHeRUXqCpkSKlJfBCHib6AxPMTGSZe7Cnav9ZU5xOpx3kYlLrIu3hPpXQu7U+PO+bB2ISV2YR+csTQ9mC46nnkxMD/3cGLyaukMiDwlqiz+ONC5CF1UhWfV9TmJsReY//axQCRl7jv63Z34jVK2mwxfr/lwa/r3kgDCj7RIUwsCQ7/hCVMIvjWFDvh5Eysfr6qevS72mtMDqcEi9h/eavjqztqaDptOtEX7enTSG2mR3HBAyee0UDIZ3QtQZp5uF5jFqua6lLhzA5AsURazWZd+5PavLU9JTjxeCMwrz0rctYQNoBBBt/ipNULJNPNDbu4h/mGeLTf3rSz9PzVOULySnn2jpCVC9k/R1uAvl+3Z8ondPFU0ZWk/RVwttejnyGkSMhFK7kcpLafjeXMMv1W/mv9Dw0rZQdmT/hXXTia/4dBOFEDY4JR5dm03VHIMEM5EpLoxJ/G5C5tljQEcKngi+3zPjI3dVEW0tctxtlF8EKfz7MD6wBNBe97OcnjeJN81WXlhaQVmA/NYJYAzWYO59ip/j56CR8k/patibuULQDkFjy81UU1Mm00TU837zW/ltUNaZUDTApyueckh+/P60599nrRjm1hgZB9mrKXEEnkpm2ltBhT8NbSLSpVO/1qyAIJhyo+RdRXWaTNdFSnnP9mkw++X30KHVQeDtr69LDV2kpwPE4Aw3E3tjLw0GhC+Zi/Y6qLvLtRejhSre9mLTIx6NMppubqhfEdshV2/d/oMDHcUDnaxOTCZpTvJpX/w796wIM6r9v31MVf2K/FjKqHhCwot9m94nzpjnik/epRR400sCFfdK9ejK0HpXSIs7RRAvyahPd7ntQerLAGLW6nWfuIsIT6AmGzzVa0V4VzT5qiYhktKou70GZDaJDt/XsK/1GtNs817iRWcroH38emmDy/BxzzaoQLf5Qm+Y5pHd1kI15bdf0c4K1xRG3V1k5H0d6mERlIY69oTAKyRGim7/wB/5xlP5ayYXgAAAABJRU5ErkJggg==" width="22" height="22">
+        </div>
+        <div style="padding: 4px; margin: 0 4px 0 0">
+          Logar com Google
+        </div>
+      </div>
+    </button>
   </div>
 
 </div>

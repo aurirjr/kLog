@@ -17,7 +17,8 @@
 }
 
 /*Sobrescrevendo o design do google*/
-:host >>> .firebaseui-idp-text {
+/*EDIT: NAO USO MAIS FIREBASE UI, so atrapalhava*/
+/*:host >>> .firebaseui-idp-text {
   font-size: 12px !important;
   padding-left: 8px !important;
 }
@@ -25,4 +26,4 @@
   height: 35px !important;
   width: 148px !important;
   padding: 0 0 0 8px !important;
-}
+}*/

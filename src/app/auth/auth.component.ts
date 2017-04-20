@@ -29,6 +29,8 @@ export class AuthComponent implements OnInit {
 
   }
 
+  provider;
+
   ngOnInit() {
 
     // Initialize Firebase
@@ -57,14 +59,16 @@ export class AuthComponent implements OnInit {
       //tosUrl: '<your-tos-url>'
     };
 
-    // Initialize the FirebaseUI Widget using Firebase.
-    var ui = new firebaseui.auth.AuthUI(firebase.auth());
-    // The start method will wait until the DOM is loaded.
-    ui.start('#firebaseui-auth-container', uiConfig);
+    this.provider = new firebase.auth.GoogleAuthProvider();
+
+    //Preferi criar minha propria UI!
+    // // Initialize the FirebaseUI Widget using Firebase.
+    // var ui = new firebaseui.auth.AuthUI(firebase.auth());
+    // // The start method will wait until the DOM is loaded.
+    // ui.start('#firebaseui-auth-container', uiConfig);
 
     //Configurando evento de mudanca de status do firebase
     firebase.auth().onAuthStateChanged( (user) => {
-
       if (user) {
         // User is signed in.
         this.displayName = user.displayName;
@@ -77,6 +81,7 @@ export class AuthComponent implements OnInit {
 
         //COMO [HIDDEN] TAVA MEIO BUGADO, DISPARO MANUALMENTE CHANGE DETECTION
         //Nao posso usar ngIf, pois preciso da referencia do div pra usar aqui com ui.start
+        //EDIT: COLOQUEI NG IF MESMO ASSIM PRECISA DISSO!
         this._CD.detectChanges();
 
         //Pegando o token de acesso
@@ -87,7 +92,8 @@ export class AuthComponent implements OnInit {
         this.status_logado = false;
         //COMO [HIDDEN] TAVA MEIO BUGADO, DISPARO MANUALMENTE CHANGE DETECTION
         //Nao posso usar ngIf, pois preciso da referencia do div pra usar aqui com ui.start
-        this._CD.detectChanges();
+        //EDIT: COLOQUEI NG IF MESMO ASSIM PRECISA DISSO!
+        this._CD.detectChanges(); //EDIT: PAREI DE USAR HIDDEN
       }
     }, (error) => {
       console.log(error);
@@ -97,6 +103,11 @@ export class AuthComponent implements OnInit {
 
   logoff() {
     firebase.auth().signOut();
+  }
+
+  logar() {
+    firebase.auth().signInWithRedirect(this.provider);
+    this.status_logado = false;
   }
 
   show_modal() {
