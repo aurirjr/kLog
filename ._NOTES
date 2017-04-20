@@ -1,0 +1,5 @@
+#Building:
+
+  ng build --prod --aot --output-hashing none --output-path=docs
+
+  #Coloco em docs, para poder ir direto pro pages do github
