@@ -6,7 +6,7 @@ import {A} from "../app.component";
   selector: 'app-tool',
   template: `
     <div (click)="selecionar_tool()">
-        <img class="tool" src="../assets/img/tools/{{nome_tool}}.png" [ngClass]="{'tool_selecionada': is_selected, 'tool_nao_selecionada': !is_selected}">
+        <img class="tool" src="assets/img/tools/{{nome_tool}}.png" [ngClass]="{'tool_selecionada': is_selected, 'tool_nao_selecionada': !is_selected}">
     </div>
 `,
   styles: [`
