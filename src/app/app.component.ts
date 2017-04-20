@@ -529,6 +529,9 @@ export class A implements OnInit, AfterViewInit {
       edge.set_select('selection-orange', true);
     }
 
+    //Recontando selecionados
+    this.recontar_selecao_count();
+
   }
 
 }
