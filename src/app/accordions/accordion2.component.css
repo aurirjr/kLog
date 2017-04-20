@@ -1,0 +1,25 @@
+.accordion_wrap {
+  width: 95%;
+  margin: 0 0 2px 3px;
+  padding: 0 2px 2px 2px ;
+  border-radius: 4px;
+  background: rgb(173,216,230);
+  float: left;
+}
+.accordion_header {
+  box-sizing: border-box; /*Isso faz com o que o padding nao desloque o resto pros lados*/
+  margin: 3px 0px 0px 0px;
+  padding: 0 2px;
+  background: rgb(173,216,230);
+  float: left; /*Colocar isso aqui e no content foi a melhor forma de remover gap entre os divs.*/
+  color: black;
+  font-weight: 600;
+  width: 100%;
+}
+.accordion_content {
+  margin: 0px 0px;
+  background:white;
+  border-radius: 4px;
+  float: left;
+  width: 100%;
+}

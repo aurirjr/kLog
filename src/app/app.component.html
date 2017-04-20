@@ -1,3 +1,240 @@
-<h1>
-  {{title}}
-</h1>
+<div class="all">
+
+  <!--ROW 1-->
+  <div style="height: 30px; display: flex; margin-top: 5px">
+
+    <!--COL 1-->
+    <div style="width: 50px; display: flex;">
+
+    </div>
+
+    <!--COL 2-->
+    <div style="flex: 1; display: flex; justify-content: space-between">
+
+      <div>
+        <!--Aqui iria o menu-->
+      </div>
+
+      <div style="display: flex;">
+        <div style="display: flex; justify-content: center; padding: 4px; font-size: 12px; line-height: 22px;">
+          <div style="border-radius: 50%; border: 1px solid #4480a8; background: #add8e6; width: 14px; height: 14px; align-self: center; justify-self: center;">
+          </div>
+          <div style="font-weight: bold; margin: 0 3px; color: #4480a8">
+            {{selected_blue_count}}
+          </div>
+          <div style="margin: 0 3px;"></div>
+          <div style="border-radius: 50%; border: 1px solid #bf5632; background: #ffa07a; width: 14px; height: 14px; align-self: center; justify-self: center;">
+          </div>
+          <div style="font-weight: bold; margin: 0 3px; color: #bf5632">
+            {{selected_orange_count}}
+          </div>
+        </div>
+        <app-tool [nome_tool]='"selection-blue"' style="margin: 0 3px"></app-tool>
+        <app-tool [nome_tool]='"selection-orange"' style="margin: 0 3px"></app-tool>
+        <app-tool [nome_tool]='"selection-white"' style="margin: 0 3px" [selecionavel]="false" (click)="remover_selecoes()"></app-tool>
+      </div>
+
+    </div>
+
+    <!--COL 3-->
+    <div style="width: 200px; display: flex;">
+    </div>
+
+  </div>
+
+  <!--ROW 2-->
+  <div style="flex: 1; display: flex;">
+
+    <!--COL 1-->
+    <div style="width: 50px; display: flex;">
+
+      <div style="padding: 10px;">
+        <app-tool [nome_tool]='"add_node"'></app-tool>
+        <app-tool [nome_tool]='"link_nodes"'></app-tool>
+        <app-tool [nome_tool]='"temp_node_list"'></app-tool>
+        <app-tool [nome_tool]='"move_hand"'></app-tool>
+        <app-tool [nome_tool]='"insert_text"'></app-tool>
+        <app-tool [nome_tool]='"delete"' [selecionavel]="false" (click)="deletar_selecionados()"></app-tool>
+      </div>
+
+    </div>
+
+    <!--COL 2-->
+    <div style="flex: 1; display: flex; padding: 0; margin: 3px;">
+
+      <!--COLOR PICKER, ja que o intellij nao me mostra as cores em SVG, uso isso aqui...-->
+      <ng-template style="background: darkgreen" hidden></ng-template>
+
+      <svg id="root_svg" style="background:rgb(255,255,214); border: 1px dashed gray; width: 100%; margin: 0;"
+           [ngStyle]="{'cursor': (selected_tool == null) ? 'default' : 'url(../assets/img/tools/cursors/'+selected_tool?.nome_tool+'.png), auto'}"
+           on-mousemove="mouse_moving($event)" on-mousedown="mouse_down($event)" on-mouseleave="mouse_leave($event)" on-mouseup="mouse_up($event)"
+           on-mousewheel="mouse_wheel($event)" (window:resize)="resetar_tamanhos_mapa($event)" >
+
+        <!--Grupo do pan, nao da mt certo pq nao tem como relativizar a posicao dos child... Mas colocar um transform_text funciona! -->
+        <!--<g [attr.transform]="transform_text"></g>-->
+
+        <g *ngFor="let x of svg_texts">
+          <text r="13" [attr.x]="x.x_s" [attr.y]="x.y_s" [attr.fill]="x.fill_color" style="font-size: 12px;" text-anchor="middle"
+                [attr.font-weight]="x.font_weight" [attr.text-decoration]="x.text_decoration"
+                on-mouseover="x.mouse_over($event,true)" on-mouseleave="x.mouse_over($event,false)"
+                on-mousedown="x.mouse_down($event)" on-mouseup="x.mouse_up($event)">{{x.text}}</text>
+        </g>
+
+        <g *ngFor="let x of svg_edges">
+          <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" [attr.stroke]="x.color2" stroke-width="5.4"/>
+          <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" [attr.stroke]="x.color3" stroke-width="5.4" stroke-dasharray="5,5"/>
+          <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" stroke="black" stroke-width="1.4"/>
+          <!--Aura-->
+          <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" stroke="transparent" stroke-width="8"
+                on-mouseover="x.mouse_over($event,true)" on-mouseleave="x.mouse_over($event,false)"
+                on-mousedown="x.mouse_down($event)" on-mouseup="x.mouse_up($event)"/>
+        </g>
+
+        <!--Os nodes ficam acima dos edges-->
+        <g *ngFor="let x of svg_nodes">
+          <circle r="11" [attr.cx]="x.x_s" [attr.cy]="x.y_s" [attr.fill]="x.color3"/>
+          <circle r="9" [attr.cx]="x.x_s" [attr.cy]="x.y_s" [attr.fill]="x.color2"/>
+          <circle r="5" [attr.cx]="x.x_s" [attr.cy]="x.y_s" [attr.fill]="x.color1" stroke="#000000" stroke-width="1.5"/>
+          <!--Aura-->
+          <circle r="13" [attr.cx]="x.x_s" [attr.cy]="x.y_s" fill="transparent"
+                  on-mouseover="x.mouse_over($event,true)" on-mouseleave="x.mouse_over($event,false)"
+                  on-mousedown="x.mouse_down($event)" on-mouseup="x.mouse_up($event)"/>
+        </g>
+
+        <line [attr.x1]="pan_line_x_s_1" [attr.y1]="pan_line_y_s_1" [attr.x2]="pan_line_x_s_2" [attr.y2]="pan_line_y_s_2" stroke="red" stroke-width="0.7" stroke-dasharray="8,4"/>
+
+        <line [attr.x1]="link_node_a?.x_s" [attr.y1]="link_node_a?.y_s" [attr.x2]="link_node_x_s_2" [attr.y2]="link_node_y_s_2" stroke="darkgreen" stroke-width="0.7" stroke-dasharray="4,2"/>
+
+        <!--Selecao, fica acima de todos-->
+        <rect [attr.x]="select_x" [attr.y]="select_y" [attr.width]="select_width" [attr.height]="select_height" fill="#add8e6a1"></rect>
+
+      </svg>
+
+
+    </div>
+
+    <!--COL 3-->
+    <div style="width: 200px; display: flex; font-size: 12px;">
+
+      <div style="padding: 0 5px">
+        <div style="border-bottom: solid 1px; font-style: italic; color: gray">Parâmetros</div>
+        <app-accordion1 [titulo]='"Geral"'> ... </app-accordion1>
+        <app-accordion1 [titulo]='"Vértices"'>
+          ...
+          <app-accordion2 [titulo]='"Ações Rápidas"' [top]='"4px"'>
+            <div style="display: flex; flex-direction: column; margin: 4px 0">
+              <div style="display: flex; justify-content: center; padding: 4px;" >
+                <button type="button" class="btn btn-outline-danger btn-sm" (click)="interconectar_nodes_sel_vermelho()"
+                [disabled]="!(selected_orange_count > 1)">
+                  <div style="border-radius: 50%; border: 1px solid #bf5632; background: #ffa07a; width: 12px; height: 12px; align-self: center; justify-self: center; display: inline-block; vertical-align: middle; margin: 0 3px 3px 0">
+                  </div>Interconectar</button>
+              </div>
+            </div>
+
+
+          </app-accordion2>
+          <app-accordion2 [titulo]='"Parâmetros Localização"' [bottom]='"4px"'>...</app-accordion2>
+        </app-accordion1>
+        <app-accordion1 [titulo]='"Arestas"'>...</app-accordion1>
+        <app-accordion1 [titulo]='"Calcular"'>
+          <app-accordion2 [titulo]='"Localização"' [top]='"4px"'>...</app-accordion2>
+          <app-accordion2 [titulo]='"Roteirização"' [bottom]='"4px"'>
+            <div style="display: flex; flex-direction: column; margin: 4px 0">
+              <div style="display: flex; justify-content: center; padding: 4px;" >
+                <button type="button" class="btn btn-outline-danger btn-sm" (click)="calcular_melhor_rota()"
+                        [disabled]="!(selected_orange_count == 2)">
+                  <div style="border-radius: 50%; border: 1px solid #bf5632; background: #ffa07a; width: 12px; height: 12px; align-self: center; justify-self: center; display: inline-block; vertical-align: middle; margin: 0 3px 3px 0">
+                  </div>Melhor rota</button>
+              </div>
+            </div>
+          </app-accordion2>
+        </app-accordion1>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!--ROW 3-->
+  <div style="height: 40px; display: flex;">
+
+    <!--COL 1-->
+    <div style="display: flex; width: 50px;">
+
+    </div>
+
+    <!--COL 2-->
+    <div style="flex: 1; display: flex; justify-content: space-between">
+
+      <!--Pra esquerda-->
+      <div style="flex: 1"></div>
+      <!--Meio-->
+      <div style="flex: 1"></div>
+      <!--Pra direita-->
+      <div style="flex: 1; display: flex; flex-direction: row-reverse">
+        <div>
+          <div class="input-group input-group-sm" style="height: 30px; margin-right: 5px;">
+            <div class="input-group-addon hover1" (click)="step_zoom(true)">
+              <img class="tool" src="../assets/img/magnifier-zoom-out.png">
+            </div>
+            <div class="input-group-addon" style="border-bottom: 2px #009688 solid; display: flex; justify-content: center; width: 83px; padding: 3px;"
+
+                 [ngClass]="{'has-danger': zoom_inp.invalid && zoom_inp.dirty }">
+              <input class="form-control form-control-danger" type="text" style="font-size: 12px; width: 76px; padding: 2px; text-align: center"
+                     [ngModel]="zoom | input_distancia" [input-distancia]="zoom" #zoom_inp="ngModel" name="zoom_inp" (do_after_change) = "zoom_or_center_changed()">
+            </div>
+            <div class="input-group-addon hover1" (click)="step_zoom(false)">
+              <img class="tool" src="../assets/img/magnifier-zoom-in.png">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!--COL 3-->
+    <div style="display: flex; width: 200px;">
+
+    </div>
+
+  </div>
+
+  <!--<div class="row" style="width:100%;height: 98vh;"> &lt;!&ndash;98% do viewport http://stackoverflow.com/questions/1575141/make-div-100-height-of-browser-window&ndash;&gt;
+    <div class="col_left" style="float:left;width:3%;height: 100%;margin: 18px 0 0 0">
+      <app-tool [nome_tool]='"add_node"'></app-tool>
+      <app-tool [nome_tool]='"link_nodes"'></app-tool>
+      <app-tool [nome_tool]='"temp_node_list"'></app-tool>
+      <app-tool [nome_tool]='"temp_hand"'></app-tool>
+    </div>
+    <div class="col_right" style="float:right; width:16%; height: 100%;">
+      <div style="amargin: 10px 0 0 0; border-bottom: solid 1px; font-style: italic; color: gray">Parâmetros</div>
+      <app-accordion1 [titulo]='"Geral"'> ;D ;D ;D ;D </app-accordion1>
+      <app-accordion1 [titulo]='"Vértices"'>asdasdasd</app-accordion1>
+      <app-accordion1 [titulo]='"Arestas"'>asdasdasd</app-accordion1>
+      <app-accordion1 [titulo]='"Calcular"'>
+        <app-accordion2 [titulo]='"Localização"' [top]='"4px"'>...</app-accordion2>
+        <app-accordion2 [titulo]='"Roteirização"' [bottom]='"4px"'>...</app-accordion2>
+      </app-accordion1>
+    </div>
+    <div class="col_center" style="float:left;margin:0 auto;width:80%;height:100%;">
+      <div>
+        <div class="menu_bt" style="margin-left: 5px">Arquivo</div>
+        <div class="menu_bt">Sobre</div>
+        <div class="menu_bt">...</div>
+      </div>
+      <div>
+        <svg style="background:rgb(255,255,204); border: 1px dashed gray; width: 100%; margin: 3px; cursor:url('../assets/img/tools/temp_hand.png'), auto;">
+          &lt;!&ndash;http://stackoverflow.com/questions/18551277/using-external-images-for-css-custom-cursors&ndash;&gt;
+          <line x1="0" y1="0" x2="200" y2="11" style="stroke:rgb(255,0,0);stroke-width:2" />
+        </svg>
+      </div>
+      <div>Zooms e outras opcoes</div>
+      <div>
+        Output
+        <div style="background: rgb(235,235,235); border: double 3px rgb(145,145,145)">
+          ...
+        </div>
+      </div>
+    </div>
+  </div>-->
+</div>

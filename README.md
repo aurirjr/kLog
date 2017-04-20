@@ -1,28 +1,77 @@
-# KLogIdea
+Obs: Por enquanto, App compatível apenas com Google Chrome, onde foi desenvolvido, já que as nuâncias de cada navegador não foram consideradas ainda, e algumas funções têm comportamento inesperado em Firefox, Edge, etc...
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0.
+# Campos e validação
 
-## Development server
+Existem diversos parâmetros a serem definidos em campos de texto, slides, etc...
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Estes campos exigem validação. Por exemplo, campos de distância exigem um formato como 100m ou 0,1km...
+Internamente, 100m e 0,1km possuem o mesmo efeito, sendo dois preenchimentos válidos para um campo de distância.
 
-## Code scaffolding
+Campos de tempo funcionam da mesma forma, podendo ser preenchidos, por exemplo, com 60m ou 1h.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
+# Zoom
 
-## Build
+O zoom pode ser controlado por um valor nominal, no canto inferior direito da tela, ou pelo wheel do mouse.
+A barra verde embaixo do valor nominal do zoom, representa a escala do mapa.
+O zoom é uma distancia, portanto aceita qualquer valor de distância.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+# Tools
 
-## Running unit tests
+Para selecionar qualquer tool, clicar no seu botão.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Atalho: Quando qualquer tool estiver selecionada, remover a tool atual com Mouse Right-Click.
 
-## Running end-to-end tests
+## Tool adicionar vértice
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
+Adiciona um vértice no mapa.
 
-## Further help
+## Tool adicionar aresta
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+Interliga quaisquer dois vértice no mapa. Basta clicar no primeiro e arrastar até o segundo.
+
+## Tool texto
+
+Adiciona qualquer texto na tela, que será movimentado junto com ZOOM e PAN.
+
+## Tool seleção azul e vermelho
+
+Existem duas seleções, azul e vermelho, que podem selecionar vértices, arestas e textos.
+(Textos somente selecionam azul).
+
+Cada elemento fica visualmente alterado quando está selecionado, seja por azul, vermelho, ou ambas.
+
+Assim, pode-se realizar ações específicas nas seleções.
+
+Ao realizar uma seleção, ela inverte o status de seleção do que foi selecionado!
+
+Isso pode ser util para, por exemplo, selecionar toda uma area com centenas de vértices, excluindo um previamente selecionado.
+
+Segurando CTRL: Aplica a ação somente em vértices. Isso pode ser muito util se combinado com a seleção invertida.
+
+## Tool remover seleções
+
+Remove toda e qualquer seleção.
+
+Atalho: Quando nenhuma tool estiver selecionada, remover toda a seleção com Mouse Right-Click.
+
+## Tool deletar
+
+Remove qualquer tipo de item selecionado de azul.
+Requisitada uma confirmação para continuar a ação.
+
+## Tool mover
+
+Move vértices e textos. Não move arestas, pois estas dependem dos vértices.
+Basta segurar o elemento e mover livremente.
+
+Se o CTRL se manter pressionado, então não funciona a movimentação de um único elemento.
+Serão movidos todos os elementos selecionados de azul!
+
+# Nenhuma tool selecionada
+
+Quando nenhuma tool esta selecionada, o mouse será utilizado para PAN.
+
+Basta clicar em qualquer ponto qualquer, arrastando-o para o novo local deste ponto qualquer.
+
+Sem nenhuma tool, Mouse Right-Click funciona como atalho para remover seleções.
+ 
