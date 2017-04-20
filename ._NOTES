@@ -4,3 +4,5 @@
 
   #Coloco em docs, para poder ir direto pro pages do github
   #Cuidado com kLog, que é case sensitive //Ref: http://stackoverflow.com/questions/6650488/why-are-github-project-document-page-urls-case-sensitive-what-are-the-negative
+
+#EDIT: Voltei a utilizar hash, pois estava tendo problema de cache... Então: --output-hashing none REMOVIDO
