@@ -67,6 +67,8 @@ Basta segurar o elemento e mover livremente.
 Se o CTRL se manter pressionado, então não funciona a movimentação de um único elemento.
 Serão movidos todos os elementos selecionados de azul!
 
+Se, além do CTRL, o Shift se manter pressionado, será criada uma copia dos elementos que seriam movidos!
+
 # Nenhuma tool selecionada
 
 Quando nenhuma tool esta selecionada, o mouse será utilizado para PAN.

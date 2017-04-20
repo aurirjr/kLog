@@ -5,7 +5,6 @@
 
     <!--COL 1-->
     <div style="width: 50px; display: flex;">
-
     </div>
 
     <!--COL 2-->
@@ -31,13 +30,14 @@
         </div>
         <app-tool [nome_tool]='"selection-blue"' style="margin: 0 3px"></app-tool>
         <app-tool [nome_tool]='"selection-orange"' style="margin: 0 3px"></app-tool>
-        <app-tool [nome_tool]='"selection-white"' style="margin: 0 3px" [selecionavel]="false" (click)="remover_selecoes()"></app-tool>
+        <app-tool [nome_tool]='"selection-white"' style="margin: 0 10px 0 3px" [selecionavel]="false" (click)="remover_selecoes()"></app-tool>
       </div>
 
     </div>
 
     <!--COL 3-->
     <div style="width: 200px; display: flex;">
+      <app-auth></app-auth>
     </div>
 
   </div>
@@ -55,6 +55,7 @@
         <app-tool [nome_tool]='"move_hand"'></app-tool>
         <app-tool [nome_tool]='"insert_text"'></app-tool>
         <app-tool [nome_tool]='"delete"' [selecionavel]="false" (click)="deletar_selecionados()"></app-tool>
+        <app-tool [nome_tool]='"manual"' [selecionavel]="false"></app-tool>
       </div>
 
     </div>
@@ -116,7 +117,7 @@
     <!--COL 3-->
     <div style="width: 200px; display: flex; font-size: 12px;">
 
-      <div style="padding: 0 5px">
+      <div style="padding: 0 5px; margin: 10px 0 0 0">
         <div style="border-bottom: solid 1px; font-style: italic; color: gray">Parâmetros</div>
         <app-accordion1 [titulo]='"Geral"'> ... </app-accordion1>
         <app-accordion1 [titulo]='"Vértices"'>

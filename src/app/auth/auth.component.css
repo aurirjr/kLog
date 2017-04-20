@@ -1,0 +1,28 @@
+:host {
+  flex: 1;
+  display: flex;
+}
+
+@keyframes spinner {
+  to {transform: rotate(360deg);}
+}
+.spinner {
+  margin: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 7px solid #ccc;
+  border-top-color: #07d;
+  animation: spinner .6s linear infinite;
+}
+
+/*Sobrescrevendo o design do google*/
+:host >>> .firebaseui-idp-text {
+  font-size: 12px !important;
+  padding-left: 8px !important;
+}
+:host >>> .firebaseui-idp-button {
+  height: 35px !important;
+  width: 148px !important;
+  padding: 0 0 0 8px !important;
+}
