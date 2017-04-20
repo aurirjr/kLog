@@ -1,5 +1,6 @@
 #Building:
 
-  ng build --prod --aot --output-hashing none --output-path=docs
+  ng build --prod --aot --output-hashing none --output-path=docs --base-href /kLog/
 
   #Coloco em docs, para poder ir direto pro pages do github
+  #Cuidado com kLog, que é case sensitive //Ref: http://stackoverflow.com/questions/6650488/why-are-github-project-document-page-urls-case-sensitive-what-are-the-negative
