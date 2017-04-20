@@ -53,10 +53,10 @@ export class Edge {
     //Por algum bug isso teve uma hr que nao tava ok.. Abri o chrome em private e tava ok... E no normal so funcionava com zoom... Que estranho...s
     if(A.a.selected_tool != null) {
       if(A.a.selected_tool.nome_tool == 'selection-blue') {
-        this.set_select('selection-blue', true);
+        this.set_select('selection-blue', !this.selected_blue);
       }
       else if (A.a.selected_tool.nome_tool == 'selection-orange') {
-        this.set_select('selection-orange', true);
+        this.set_select('selection-orange', !this.selected_orange);
       }
     } else {
       //Se ta clicando com nenhuma tool selecionada, então selecionar azul... Somente este node! remover selecao de todos os outros...

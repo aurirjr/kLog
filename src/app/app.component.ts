@@ -326,21 +326,104 @@ export class A implements OnInit, AfterViewInit {
 
         //Se esta segurando o mouse e existe um draggabe_element
         if(e.which == 1 && this.draggable_element == null && e.ctrlKey) {
-          for(let node of this.svg_nodes) {
-            if(node.selected_blue) {
-              //Mesma movimentação do PAN! So que sem mudar centro...
-              node._x_s(node.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1);
-              node._y_s(node.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
+          if(!e.shiftKey) //Sem shift, apenas move...
+          {
+            for(let node of this.svg_nodes) {
+              if(node.selected_blue) {
+                //Apenas movendo
+                //Mesma movimentação do PAN! So que sem mudar centro...
+                node._x_s(node.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1);
+                node._y_s(node.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
+              }
+            }
+            //Tambem mover os textos!
+            for(let text of this.svg_texts) {
+              if(text.selected_blue) {
+                //Mesma movimentação do PAN! So que sem mudar centro...
+                text._x_s(text.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1);
+                text._y_s(text.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
+              }
             }
           }
-          //Tambem mover os textos!
-          for(let text of this.svg_texts) {
-            if(text.selected_blue) {
-              //Mesma movimentação do PAN! So que sem mudar centro...
-              text._x_s(text.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1);
-              text._y_s(text.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
+          else //Com shift, copia. Se o Shift estiver pressionado, nao mover, criar novos!!
+          {
+            //Por incrivel que pareça, é mais interessante começar a copia pelos edges selecionados...
+            //A regra é: Se um edge foi selecionado, copiar ele e seus nodes!
+            //Se um node foi selecionado, sem edge selecionado ligado a ele, copiar so ele...
+            //Começo copiando os edges, e fazendo uma correlação dos clones...
+            //Depois eu saio verificando todos os nodes selecionados, pra saber quais não foram copiados por causa dos edes...
+            //E ai copio esses nodes avulsos
+
+            let nodes_e_clones : Map<Node,Node> = new Map<Node,Node>();
+
+            for(let edge of this.svg_edges) {
+              if(edge.selected_blue) {
+                //Encontrando os nodes clonados pra ligar com esse edge... Se ainda nao existir, então criar...
+                let node_clonado_nA : Node;
+                let node_clonado_nB : Node;
+
+                node_clonado_nA = nodes_e_clones.get(edge.nA);
+
+                //Se nao foi clonado, clonar
+                if(node_clonado_nA == null) {
+                  node_clonado_nA = new Node()
+                    ._x_s(edge.nA.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1)
+                    ._y_s(edge.nA.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
+                  nodes_e_clones.set(edge.nA,node_clonado_nA);
+                  this.svg_nodes.push(node_clonado_nA);
+                }
+
+                node_clonado_nB = nodes_e_clones.get(edge.nB);
+
+                //Se nao foi clonado, clonar
+                if(node_clonado_nB == null) {
+                  node_clonado_nB = new Node()
+                    ._x_s(edge.nB.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1)
+                    ._y_s(edge.nB.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
+                  nodes_e_clones.set(edge.nB,node_clonado_nB);
+                  this.svg_nodes.push(node_clonado_nB);
+                }
+
+                console.log(node_clonado_nA);
+                console.log(node_clonado_nB);
+
+                //Adicionando o clone do edge:
+                this.svg_edges.push(new Edge()._nA(node_clonado_nA)._nB(node_clonado_nB));
+              }
+            }
+
+            //Agora vou checar se algum node avulso, selecionado, não foi copiado...
+            let nodes_ja_copiados : Array<Node> = Array.from(nodes_e_clones.keys());
+
+            for(let node of this.svg_nodes) {
+              if(node.selected_blue) {
+
+                //Se nao foi copiado ainda, copiar
+                if(!nodes_ja_copiados.includes(node)) {
+                  //Copiando os nodes...
+                  this.svg_nodes.push(new Node()
+                    ._x_s(node.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1)
+                    ._y_s(node.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1));
+
+                  //Se um dia precisar utilizar nodes_e_clones mais a frente, entao tambem dar nodes_e_clones.set aqui...
+                }
+              }
+            }
+
+            //Tambem copiar os textos!
+            for(let text of this.svg_texts) {
+              if(text.selected_blue) {
+                //Mesma movimentação do PAN! So que sem mudar centro...
+                this.svg_texts.push(
+                  new Text()
+                    ._x_s(text.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1)
+                    ._y_s(text.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1)
+                    ._text(text.text)
+                );
+              }
             }
           }
+
         }
       }
     } else {

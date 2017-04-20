@@ -84,11 +84,11 @@ export class Node {
     //Por algum bug isso teve uma hr que nao tava ok.. Abri o chrome em private e tava ok... E no normal so funcionava com zoom... Que estranho...s
     if(A.a.selected_tool != null) {
       if(A.a.selected_tool.nome_tool == 'selection-blue') {
-        this.set_select('selection-blue', true);
+        this.set_select('selection-blue', !this.selected_blue);
         A.a.recontar_selecao_count();
       }
       else if (A.a.selected_tool.nome_tool == 'selection-orange') {
-        this.set_select('selection-orange', true);
+        this.set_select('selection-orange', !this.selected_orange);
         A.a.recontar_selecao_count();
       }
       else if(A.a.selected_tool.nome_tool == 'link_nodes' ) {
