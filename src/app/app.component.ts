@@ -162,7 +162,7 @@ export class A implements OnInit, AfterViewInit {
 
     if(this.selected_tool != null ) {
 
-      if(this.selected_tool.nome_tool == 'selection-blue' || this.selected_tool.nome_tool == 'selection-orange') {
+      if(this.selected_tool.nome_tool == 'selection_blue' || this.selected_tool.nome_tool == 'selection_orange') {
 
         if(e.which == 1) { //https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/which
 
@@ -256,7 +256,7 @@ export class A implements OnInit, AfterViewInit {
     } else {
 
       if(this.selected_tool != null ) {
-        if(this.selected_tool.nome_tool == 'selection-blue' || this.selected_tool.nome_tool == 'selection-orange') {
+        if(this.selected_tool.nome_tool == 'selection_blue' || this.selected_tool.nome_tool == 'selection_orange') {
           //Marcando onde a selecao comeca
           this.select_start_x = e.offsetX;
           this.select_start_y = e.offsetY;
@@ -286,7 +286,7 @@ export class A implements OnInit, AfterViewInit {
   mouse_up(e) {
 
     if(this.selected_tool != null ) {
-      if(this.selected_tool.nome_tool == 'selection-blue' || this.selected_tool.nome_tool == 'selection-orange') {
+      if(this.selected_tool.nome_tool == 'selection_blue' || this.selected_tool.nome_tool == 'selection_orange') {
         //Apos qualquer mudanca na area de selecao, calcular quais sao os nodes selecionados
         //Sao todos aqueles onde x e y se encontram dentro do quadrado:
         for(let node of this.svg_nodes) {
@@ -448,19 +448,19 @@ export class A implements OnInit, AfterViewInit {
   remover_selecoes() {
     //Removendo todas as selecoes...
     for(let node of this.svg_nodes) {
-      node.set_select('selection-blue',false);
-      node.set_select('selection-orange',false);
+      node.set_select('selection_blue',false);
+      node.set_select('selection_orange',false);
     }
 
     //Removendo todas as selecoes...
     for(let node of this.svg_edges) {
-      node.set_select('selection-blue',false);
-      node.set_select('selection-orange',false);
+      node.set_select('selection_blue',false);
+      node.set_select('selection_orange',false);
     }
 
     //Removendo todas as selecoes...
     for(let text of this.svg_texts) {
-      text.set_select('selection-blue',false);
+      text.set_select('selection_blue',false);
     }
 
     this.recontar_selecao_count();
@@ -603,10 +603,10 @@ export class A implements OnInit, AfterViewInit {
 
     //Marcando os edges e nodes do caminho otimo!
     for(let node of caminho_otimo.nodes) {
-      node.set_select('selection-orange', true);
+      node.set_select('selection_orange', true);
     }
     for(let edge of caminho_otimo.edges) {
-      edge.set_select('selection-orange', true);
+      edge.set_select('selection_orange', true);
     }
 
     //Recontando selecionados

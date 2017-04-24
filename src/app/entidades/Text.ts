@@ -77,16 +77,19 @@ export class Text {
 
     //Por algum bug isso teve uma hr que nao tava ok.. Abri o chrome em private e tava ok... E no normal so funcionava com zoom... Que estranho...s
     if(A.a.selected_tool != null) {
-      if(A.a.selected_tool.nome_tool == 'selection-blue') {
-        this.set_select('selection-blue', true);
+      if(A.a.selected_tool.nome_tool == 'selection_blue') {
+        this.set_select('selection_blue', true);
       }
       else if (A.a.selected_tool.nome_tool == 'move_hand') {
-        A.a.draggable_element = this;
+        if(!e.ctrlKey && !e.shiftKey) {
+          //Nao dar drag se o usuario estiver usando ctrl ou shift...
+          A.a.draggable_element = this;
+        }
       }
     } else {
       //Se ta clicando com nenhuma tool selecionada, então selecionar azul... Somente este node! remover selecao de todos os outros...
       A.a.remover_selecoes();
-      this.set_select('selection-blue', true);
+      this.set_select('selection_blue', true);
     }
   }
 
@@ -100,7 +103,7 @@ export class Text {
 
   public set_select(select_tool : string, s : boolean) {
 
-    if(select_tool == 'selection-blue') {
+    if(select_tool == 'selection_blue') {
       this.selected_blue = s;
     };
 
@@ -108,7 +111,7 @@ export class Text {
   }
 
   public invert_select(select_tool : string) {
-    if(select_tool == 'selection-blue') this.set_select(select_tool, !this.selected_blue);
+    if(select_tool == 'selection_blue') this.set_select(select_tool, !this.selected_blue);
   }
 
   set_style() {

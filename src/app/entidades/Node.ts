@@ -83,12 +83,12 @@ export class Node {
 
     //Por algum bug isso teve uma hr que nao tava ok.. Abri o chrome em private e tava ok... E no normal so funcionava com zoom... Que estranho...s
     if(A.a.selected_tool != null) {
-      if(A.a.selected_tool.nome_tool == 'selection-blue') {
-        this.set_select('selection-blue', !this.selected_blue);
+      if(A.a.selected_tool.nome_tool == 'selection_blue') {
+        this.set_select('selection_blue', !this.selected_blue);
         A.a.recontar_selecao_count();
       }
-      else if (A.a.selected_tool.nome_tool == 'selection-orange') {
-        this.set_select('selection-orange', !this.selected_orange);
+      else if (A.a.selected_tool.nome_tool == 'selection_orange') {
+        this.set_select('selection_orange', !this.selected_orange);
         A.a.recontar_selecao_count();
       }
       else if(A.a.selected_tool.nome_tool == 'link_nodes' ) {
@@ -104,7 +104,7 @@ export class Node {
     } else {
       //Se ta clicando com nenhuma tool selecionada, então selecionar azul... Somente este node! remover selecao de todos os outros...
       A.a.remover_selecoes();
-      this.set_select('selection-blue', true);
+      this.set_select('selection_blue', true);
       A.a.recontar_selecao_count();
     }
   }
@@ -127,10 +127,10 @@ export class Node {
 
   public set_select(select_tool : string, s : boolean) {
 
-    if(select_tool == 'selection-blue') {
+    if(select_tool == 'selection_blue') {
       this.selected_blue = s;
     }
-    else if(select_tool == 'selection-orange') {
+    else if(select_tool == 'selection_orange') {
       this.selected_orange = s;
     }
 
@@ -149,7 +149,7 @@ export class Node {
   }
 
   public invert_select(select_tool : string) {
-    if(select_tool == 'selection-blue') this.set_select(select_tool, !this.selected_blue);
-    else if(select_tool == 'selection-orange') this.set_select(select_tool, !this.selected_orange);
+    if(select_tool == 'selection_blue') this.set_select(select_tool, !this.selected_blue);
+    else if(select_tool == 'selection_orange') this.set_select(select_tool, !this.selected_orange);
   }
 }
