@@ -75,7 +75,7 @@ export class Text {
 
   public mouse_down(e) {
 
-    //Por algum bug isso teve uma hr que nao tava ok.. Abri o chrome em private e tava ok... E no normal so funcionava com zoom... Que estranho...s
+    //Por algum bug isso teve uma hr que nao tava ok.. Abri o chrome em private e tava ok... E no normal so funcionava com zoom... Que estranho...
     if(A.a.selected_tool != null) {
       if(A.a.selected_tool.nome_tool == 'selection_blue') {
         this.set_select('selection_blue', true);
