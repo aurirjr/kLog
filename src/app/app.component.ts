@@ -82,6 +82,16 @@ export class A implements OnInit, AfterViewInit {
   select_y : number;
   select_width : number;
   select_height : number;
+  //#add8e6a1 - Para selecao azul
+  //#ffa07aa1 - Para selecao orange
+  select_fill : string;
+  public config_inicial_selecao(tipo: string) {
+    if(tipo == 'blue') {
+      this.select_fill = 'rgba(173,216,230,0.4)';
+    } else if(tipo == 'orange') {
+      this.select_fill = 'rgba(255,160,122,0.35)';
+    }
+  }
 
   //Contadores de selecao!
   selected_blue_count = 0;
