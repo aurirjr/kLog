@@ -181,7 +181,7 @@
       <div style="flex: 1; display: flex; flex-direction: row-reverse">
         <div>
           <div class="input-group input-group-sm" style="height: 30px; margin-right: 5px; padding: 0">
-            <div class="input-group-addon hover1" (click)="switch_gmaps()" style="padding: 0 4px" [ngStyle]="{'background': (!gmaps_onoff)?'#ececec':'#00b2a4'}">
+            <div class="input-group-addon hover1" (click)="turnon_gmaps(!gmaps_onoff)" style="padding: 0 4px" [ngStyle]="{'background': (!gmaps_onoff)?'#ececec':'#00b2a4'}">
               <i class="_ik _svg _gmaps _wh24"></i>
             </div>
           </div>
@@ -191,10 +191,10 @@
             <div class="input-group-addon hover1" (click)="step_zoom(true)">
               <i class="_ik _svg _mag_zoom_out _f12 _wh12" style="color: #5b5b5b"></i>
             </div>
-            <div class="input-group-addon" style="border-bottom: 2px #009688 solid; display: flex; justify-content: center; width: 97px; padding: 3px;"
+            <div class="input-group-addon" style="border-bottom: 2px #009688 solid; display: flex; justify-content: center; width: 83px; padding: 3px;"
 
                  [ngClass]="{'has-danger': zoom_inp.invalid && zoom_inp.dirty }">
-              <input class="form-control form-control-danger" type="text" style="font-size: 12px; width: 76px; padding: 2px; text-align: center"
+              <input class="input-group-addon" type="text" style="font-size: 12px; width: 76px; padding: 2px; text-align: center; background: white"
                      [ngModel]="zoom | input_distancia" [input-distancia]="zoom" #zoom_inp="ngModel" name="zoom_inp" (do_after_change) = "zoom_or_center_changed()">
             </div>
             <div class="input-group-addon hover1" (click)="step_zoom(false)">

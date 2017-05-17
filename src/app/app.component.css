@@ -24,3 +24,7 @@
   background: #babcb3;
   cursor: pointer;
 }
+
+.form-control {
+  -webkit-font-smoothing: subpixel-antialiased;
+}

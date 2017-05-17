@@ -9,7 +9,7 @@ import {FG1} from "app/funcoes_globais/FuncoesGlobais1";
 import {Solver_Dijkstra} from "./solvers/Solver_Dijkstra";
 import {Graph} from "./entidades/Graph";
 import {Path} from "app/entidades/Path";
-import {gMaps} from "./GoogleMaps";
+import {gMaps, GoogleMapsLoader} from "./GoogleMaps";
 
 declare var $: any;
 declare var bootbox: any;
@@ -112,13 +112,31 @@ export class A implements OnInit, AfterViewInit {
   }
 
   //Controle de zoom
-  public zoom : Distancia = new Distancia()._x(50)._und('km'); //Quantidade de metros em 83px de tela, que é o tamanho da linha verde embaixo do problema de zoom... Default é 100m / 83px
-  public zoom_fator : number = this.zoom.x_m / 83; //50Km em 97px - Foi esse valor que a escala do google medeu com zoom level 8, que é o zoom level inicial
+  public zoom : Distancia = new Distancia()._x_und(50,'km'); //Quantidade de metros em 83px de tela, que é o tamanho da linha verde embaixo do problema de zoom... Default é 100m / 83px
+  public zoom_fator : number = this.zoom.x_m / 83; //50Km em 83px - Foi esse valor que a escala do google medeu com zoom level 8, que é o zoom level inicial
 
   public zoom_or_center_changed() {
 
-    //Recalculando o zoom factor...
-    this.zoom_fator = this.zoom.x_m / 83;
+    if(this.gmaps_onoff && gMaps.gmap != null) {
+      //Considerando zoom factor (m/p) de gMap
+      this.zoom_fator = gMaps.get_meters_per_pixel();
+
+      //Como o zoom factor e considerado de la, então o zoom (Distancia) que aparece na tela vem desse zoomFactor
+      //O que vai aparecer na tela terá uma imprecisão de varias casas decimais... Mas não tem problema, internamente o zoom factor ta correto...
+      this.zoom = new Distancia()._x_und(Math.floor(this.zoom_fator*83),'m')._und(this.zoom.und); //Define em metro, depois converte pra unidade que ja tava aparecendo antes...
+
+      //Quando se usa gMaps, ao contrario do zoom, que é definido no Grid em função do gMaps... O centro é definido no Grid primeiro, e no gMaps em função do Grid...
+      //O google carregou com uma latInicial e uma lngInicial, que correspondem a x_m_centro = 0 e y_m_centro = 0;
+      //Agora, tenho que especificar novas lat e lng pro gMaps, baseado nos novos x_m_centro e y_m_centro.
+      //Para tanto, criei a a função recalcular_centro.
+      gMaps.recalcular_centro(this.x_m_centro, this.y_m_centro);
+
+    } else {
+      //Considerando zoom normal:
+
+      //Recalculando o zoom factor...
+      this.zoom_fator = this.zoom.x_m / 83;
+    }
 
     //Se o zoom mudou, recalcular todos os x_s e y_s:
     for(let node of this.svg_nodes) {
@@ -127,7 +145,7 @@ export class A implements OnInit, AfterViewInit {
     }
 
     for(let text of this.svg_texts) {
-      text._x_m(text .x_m); //Isso redfine o x_m, que nao mudou, mas nisso recalcula-se o x_s...
+      text._x_m(text.x_m); //Isso redfine o x_m, que nao mudou, mas nisso recalcula-se o x_s...
       text._y_m(text.y_m);
     }
   }
@@ -147,13 +165,21 @@ export class A implements OnInit, AfterViewInit {
   //True é up, false é down...
   step_zoom(up_down :boolean) {
 
-    //EU RECRIO uma nova Distancia, para disparar o "zoom | input_distancia", pq nao quero usar pipes impuros, e colocar zoom.x_m nao da certo tb...
-    if(up_down) {
-      this.zoom = new Distancia()._x(Math.round(this.zoom.x*(1+this.mouse_wheel_zoom_step) * 1000) / 1000)._und(this.zoom.und); //Multiplicando pot 1+passo e arredodando pra 3 casas decimais
-    } else {
-      this.zoom = new Distancia()._x(Math.round(this.zoom.x*(1-this.mouse_wheel_zoom_step) * 1000) / 1000)._und(this.zoom.und); //Mesma coisa, mas é 1 - o passo..
-    }
+    if(this.gmaps_onoff && gMaps.gmap != null) {
+      //Quando for zoom usando gMaps, simplemente incrementar ou decrementar o zoomLevel:
+      if(up_down && (gMaps.gmap.getZoom()-1 >= 0)) gMaps.gmap.setZoom(gMaps.gmap.getZoom()-1);
+      if(!up_down && (gMaps.gmap.getZoom()+1 <= 18)) gMaps.gmap.setZoom(gMaps.gmap.getZoom()+1);
 
+    } else
+    {
+      //Recalculando zoom normal:
+      //EU RECRIO uma nova Distancia, para disparar o "zoom | input_distancia", pq nao quero usar pipes impuros, e colocar zoom.x_m nao da certo tb...
+      if(up_down) {
+        this.zoom = new Distancia()._x_und(Math.round(this.zoom.x*(1+this.mouse_wheel_zoom_step) * 1000) / 1000,this.zoom.und); //Multiplicando pot 1+passo e arredodando pra 3 casas decimais
+      } else {
+        this.zoom = new Distancia()._x_und(Math.round(this.zoom.x*(1-this.mouse_wheel_zoom_step) * 1000) / 1000,this.zoom.und); //Mesma coisa, mas é 1 - o passo..
+      }
+    }
     this.zoom_or_center_changed();
   }
 
@@ -643,22 +669,35 @@ export class A implements OnInit, AfterViewInit {
   }
 
   gmaps_onoff = false;
-  switch_gmaps() {
+  turnon_gmaps(turnon : boolean) {
 
-    if(!this.gmaps_onoff) {
+    if(turnon) { //Ligando gmaps
+
       //Ligando o switch de usar ou não gmaps...
       this.gmaps_onoff = true;
       //Coloco dentro de um setTimeout(()=>{},0); para dar tempo o ngIf ligar o <div id="map">
-      setTimeout(()=>{
-        if(gMaps._mapsApi == null) {
+      setTimeout(() => {
+        //Se a API ainda nao foi carregada, carregar, e quando carregar tentar ligar o gmaps denovo...
+        if (gMaps._mapsApi == null) {
           gMaps.carregar_api(); //La ele carrega a api e depois cria novo mapa...
+          let subs = gMaps.api_loaded.subscribe(() => {
+            this.turnon_gmaps(true); //Tentanto ligar o gmaps denovo
+            subs.unsubscribe(); //Para nao gastar memoria...
+          });
         } else {
+
+          //Antes de criar o novo mapa, encontrando qual melhor nivel de zoom do gMaps, baseado no zoom atual do grid do kLog
+          gMaps.procurar_zoom_inicial_mais_proximo(this.zoom_fator);
           //Se a api ja foi carregada, so criar novo mapa...
           gMaps.criar_novo_mapa();
+          //Tambem forcar um recalculo do zoom:
+          this.zoom_or_center_changed();
         }
-      },0);
+      }, 0);
 
-    } else {
+    }
+    else //Desligando gmaps
+    {
       this.gmaps_onoff = false;
     }
 
