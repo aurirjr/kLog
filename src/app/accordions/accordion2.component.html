@@ -1,6 +1,8 @@
 <div class="accordion_wrap" [style.margin-top]='top' [style.margin-bottom]='bottom'>
-  <div class="accordion_header" style="display: flex; padding: 0; align-items: center;" (click)="accord_click();">
-    <img class="acc_icon" src="assets/img/{{img}}" style="margin:0 4px 0 0; width: 13px; height: 13px; line-height: 20px"> {{titulo}}
+  <div class="accordion_header" style="display: flex; padding: 0 0 0 2px; align-items: center;" (click)="accord_click();">
+    <!--<img class="acc_icon" src="assets/img/{{img}}" style="margin:0 4px 0 0; width: 13px; height: 13px; line-height: 20px"> {{titulo}}-->
+    <i class="_ik _svg _arrow_circle _p-0-2 _f11 _wh11 _mt-3 _r180" style="color: #3f3f3f;" [ngClass]="{'_r180': !hidden}" ></i><!--
+    --><span style="margin: -3px 0 0 3px">{{titulo}}</span>
   </div>
   <div class="accordion_content" [hidden]="hidden">
     <ng-content></ng-content>

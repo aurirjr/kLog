@@ -17,7 +17,7 @@ declare var bootbox: any;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css', 'versioning.css']
 })
 export class A implements OnInit, AfterViewInit {
 

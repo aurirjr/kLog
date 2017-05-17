@@ -10,7 +10,6 @@ import {Problema} from "../Problema";
 export class Accordion2Component {
 
   @Input() titulo: string;
-  img = "seta_baixo2.png"
 
   @Input() top: string  = '2px'; //Default é 2, mas pode ser mudado
   @Input() bottom: string  = '2px'; //Default é 2, mas pode ser mudado
@@ -19,11 +18,6 @@ export class Accordion2Component {
 
   public accord_click() {
     this.hidden = !this.hidden;
-    if(this.hidden) {
-      this.img = "seta_baixo2.png"
-    } else {
-      this.img = "seta_cima2.png"
-    }
   }
 
 }

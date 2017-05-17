@@ -49,6 +49,7 @@
 ._ik._h100 { height: 100% } ._ik._w100 { width: 100% }
 
 /*Atalhos para tamanhos, uteis pois porcentagem so funciona se o parent tiver tamanho. As vezes nao tem...*/
+._ik._wh11 { width: 11px; height: 11px; } ._ik._wh12 { width: 12px; height: 12px; }
 ._ik._wh14 { width: 14px; height: 14px; } ._ik._wh16 { width: 16px; height: 16px; } ._ik._wh18 { width: 18px; height: 18px; }
 ._ik._wh20 { width: 20px; height: 20px; } ._ik._wh22 { width: 22px; height: 22px; } ._ik._wh24 { width: 24px; height: 24px; }
 ._ik._wh26 { width: 26px; height: 26px; } ._ik._wh28 { width: 28px; height: 28px; } ._ik._wh30 { width: 30px; height: 30px; }
@@ -87,10 +88,10 @@ Quando não tiver certeza, ou não fizer muita diferença, entao deixa sem esse 
 /*Cuidado com os paddings das tabelas, as vezes eles precisam ser alterados para não atrapalhar alinhamento*/
 /*Imagens como setas, etc, nao precisa baixar até 9 direções... Baixar somente uma, e usar os rotate... Como padrao, baixar sempre o right*/
 
-/*._ik._svg._user_circle_o_g14 {
-  min-width: 14px; min-height: 14px;
-  -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'><path d='M14 0c7.734 0 14 6.266 14 14 0 7.688-6.234 14-14 14-7.75 0-14-6.297-14-14 0-7.734 6.266-14 14-14zM23.672 21.109c1.453-2 2.328-4.453 2.328-7.109 0-6.609-5.391-12-12-12s-12 5.391-12 12c0 2.656 0.875 5.109 2.328 7.109 0.562-2.797 1.922-5.109 4.781-5.109 1.266 1.234 2.984 2 4.891 2s3.625-0.766 4.891-2c2.859 0 4.219 2.312 4.781 5.109zM20 11c0-3.313-2.688-6-6-6s-6 2.688-6 6 2.688 6 6 6 6-2.688 6-6z'/></svg>");
-}*/
+._ik._svg._arrow_circle {
+  min-width: 10px; min-height: 10px;
+  -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M32 16c0-8.837-7.163-16-16-16s-16 7.163-16 16 7.163 16 16 16 16-7.163 16-16zM3 16c0-7.18 5.82-13 13-13s13 5.82 13 13-5.82 13-13 13-13-5.82-13-13z'></path><path d='M9.914 11.086l-2.829 2.829 8.914 8.914 8.914-8.914-2.828-2.828-6.086 6.086z'/></svg>");
+}
 
 /*IMAGENS PNG BASE64 - Usar https://www.base64-image.de/ */
 /*!! MANTER SEMPRE O PADRAO _ik._b64._nome_nome !!*/
