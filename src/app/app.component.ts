@@ -5,11 +5,11 @@ import {Node} from "./entidades/Node";
 import {Edge} from "./entidades/Edge";
 import {Text} from "./entidades/Text";
 import {Distancia} from "./entidades/Distancia";
-import {forEach} from "@angular/router/src/utils/collection";
 import {FG1} from "app/funcoes_globais/FuncoesGlobais1";
 import {Solver_Dijkstra} from "./solvers/Solver_Dijkstra";
 import {Graph} from "./entidades/Graph";
 import {Path} from "app/entidades/Path";
+import {gMaps} from "./GoogleMaps";
 
 declare var $: any;
 declare var bootbox: any;
@@ -112,8 +112,8 @@ export class A implements OnInit, AfterViewInit {
   }
 
   //Controle de zoom
-  public zoom : Distancia = new Distancia()._x(100)._und('m'); //Quantidade de metros em 83px de tela, que é o tamanho da linha verde embaixo do problema de zoom... Default é 100m / 83px
-  public zoom_fator : number = this.zoom.x_m / 83; //100m em 83px
+  public zoom : Distancia = new Distancia()._x(50)._und('km'); //Quantidade de metros em 83px de tela, que é o tamanho da linha verde embaixo do problema de zoom... Default é 100m / 83px
+  public zoom_fator : number = this.zoom.x_m / 83; //50Km em 97px - Foi esse valor que a escala do google medeu com zoom level 8, que é o zoom level inicial
 
   public zoom_or_center_changed() {
 
@@ -168,7 +168,15 @@ export class A implements OnInit, AfterViewInit {
   link_node_a : Node;
   link_node_x_s_2 = 0; link_node_y_s_2 = 0;
 
+  //Mostrando com ate 1 metro de precisão
+  indicador_mouse_x = 0;
+  indicador_mouse_y = 0;
+
   mouse_moving(e) {
+
+    //Mostrando com ate 1 metro de precisão
+    this.indicador_mouse_x = Math.floor(FG1.get_x_m_from_x_s(e.offsetX));
+    this.indicador_mouse_y = Math.floor(FG1.get_y_m_from_y_s(e.offsetY));
 
     if(this.selected_tool != null ) {
 
@@ -447,6 +455,9 @@ export class A implements OnInit, AfterViewInit {
 
   mouse_leave(e) {
 
+    this.indicador_mouse_x = 0;
+    this.indicador_mouse_y = 0;
+
     this.select_width = 0;
     this.select_height = 0;
 
@@ -454,6 +465,13 @@ export class A implements OnInit, AfterViewInit {
     this.pan_line_y_s_1 = null;
     this.pan_line_x_s_2 = null;
     this.pan_line_y_s_2 = null;
+
+  }
+
+  mouse_enter(e) {
+
+    this.indicador_mouse_x = Math.floor(FG1.get_x_m_from_x_s(e.offsetX));
+    this.indicador_mouse_y = Math.floor(FG1.get_y_m_from_y_s(e.offsetY));
 
   }
 
@@ -589,8 +607,6 @@ export class A implements OnInit, AfterViewInit {
     //   this.svg_edges.push(new Edge()._nA(this.svg_nodes[2*k])._nB(this.svg_nodes[2*k+1]));
     // }
 
-
-
   }
 
   calcular_melhor_rota() {
@@ -623,6 +639,28 @@ export class A implements OnInit, AfterViewInit {
 
     //Recontando selecionados
     this.recontar_selecao_count();
+
+  }
+
+  gmaps_onoff = false;
+  switch_gmaps() {
+
+    if(!this.gmaps_onoff) {
+      //Ligando o switch de usar ou não gmaps...
+      this.gmaps_onoff = true;
+      //Coloco dentro de um setTimeout(()=>{},0); para dar tempo o ngIf ligar o <div id="map">
+      setTimeout(()=>{
+        if(gMaps._mapsApi == null) {
+          gMaps.carregar_api(); //La ele carrega a api e depois cria novo mapa...
+        } else {
+          //Se a api ja foi carregada, so criar novo mapa...
+          gMaps.criar_novo_mapa();
+        }
+      },0);
+
+    } else {
+      this.gmaps_onoff = false;
+    }
 
   }
 

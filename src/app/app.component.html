@@ -64,53 +64,58 @@
     <div style="flex: 1; display: flex; padding: 0; margin: 3px;">
 
       <!--COLOR PICKER, ja que o intellij nao me mostra as cores em SVG, uso isso aqui...-->
-      <ng-template style="background: darkgreen" hidden></ng-template>
+      <ng-template style="background: darkgreen;" hidden></ng-template>
+      <div style="width: 100%; margin: 0; height: 100%; background:rgb(255,255,214); border: 1px dashed gray; position: relative;">
+        <!--Tanto o svg como o div do google maps sao absolute em relacao ao relative acima... Assim, pairam no mesmo lugar-->
+        <div id="map" style="background: transparent; position: absolute; width: 100%; height: 100%" *ngIf="gmaps_onoff"></div>
+        <svg id="root_svg" style=" width: 100%; height: 100%; position: absolute" [ngClass]="'_cur_'+(selected_tool?.nome_tool)"
+             on-mousemove="mouse_moving($event)" on-mousedown="mouse_down($event)" on-mouseleave="mouse_leave($event)" on-mouseup="mouse_up($event)"
+             on-mousewheel="mouse_wheel($event)" (window:resize)="resetar_tamanhos_mapa($event)" on-mouseenter="mouse_enter($event)">
 
-      <svg id="root_svg" style="background:rgb(255,255,214); border: 1px dashed gray; width: 100%; margin: 0;" [ngClass]="'_cur_'+(selected_tool?.nome_tool)"
-           on-mousemove="mouse_moving($event)" on-mousedown="mouse_down($event)" on-mouseleave="mouse_leave($event)" on-mouseup="mouse_up($event)"
-           on-mousewheel="mouse_wheel($event)" (window:resize)="resetar_tamanhos_mapa($event)" >
+          <!--OLD: [ngStyle]="{'cursor': (selected_tool == null) ? 'default' : 'url(assets/img/tools/cursors/'+selected_tool?.nome_tool+'.png), auto'}"-->
 
-        <!--OLD: [ngStyle]="{'cursor': (selected_tool == null) ? 'default' : 'url(assets/img/tools/cursors/'+selected_tool?.nome_tool+'.png), auto'}"-->
+          <!--Grupo do pan, nao da mt certo pq nao tem como relativizar a posicao dos child... Mas colocar um transform_text funciona! -->
+          <!--<g [attr.transform]="transform_text"></g>-->
 
-        <!--Grupo do pan, nao da mt certo pq nao tem como relativizar a posicao dos child... Mas colocar um transform_text funciona! -->
-        <!--<g [attr.transform]="transform_text"></g>-->
+          <g *ngFor="let x of svg_texts">
+            <text r="13" [attr.x]="x.x_s" [attr.y]="x.y_s" [attr.fill]="x.fill_color" style="font-size: 12px;" text-anchor="middle"
+                  [attr.font-weight]="x.font_weight" [attr.text-decoration]="x.text_decoration"
+                  on-mouseover="x.mouse_over($event,true)" on-mouseleave="x.mouse_over($event,false)"
+                  on-mousedown="x.mouse_down($event)" on-mouseup="x.mouse_up($event)">{{x.text}}</text>
+          </g>
 
-        <g *ngFor="let x of svg_texts">
-          <text r="13" [attr.x]="x.x_s" [attr.y]="x.y_s" [attr.fill]="x.fill_color" style="font-size: 12px;" text-anchor="middle"
-                [attr.font-weight]="x.font_weight" [attr.text-decoration]="x.text_decoration"
-                on-mouseover="x.mouse_over($event,true)" on-mouseleave="x.mouse_over($event,false)"
-                on-mousedown="x.mouse_down($event)" on-mouseup="x.mouse_up($event)">{{x.text}}</text>
-        </g>
-
-        <g *ngFor="let x of svg_edges">
-          <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" [attr.stroke]="x.color2" stroke-width="5.4"/>
-          <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" [attr.stroke]="x.color3" stroke-width="5.4" stroke-dasharray="5,5"/>
-          <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" stroke="black" stroke-width="1.4"/>
-          <!--Aura-->
-          <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" stroke="transparent" stroke-width="8"
-                on-mouseover="x.mouse_over($event,true)" on-mouseleave="x.mouse_over($event,false)"
-                on-mousedown="x.mouse_down($event)" on-mouseup="x.mouse_up($event)"/>
-        </g>
-
-        <!--Os nodes ficam acima dos edges-->
-        <g *ngFor="let x of svg_nodes">
-          <circle r="11" [attr.cx]="x.x_s" [attr.cy]="x.y_s" [attr.fill]="x.color3"/>
-          <circle r="9" [attr.cx]="x.x_s" [attr.cy]="x.y_s" [attr.fill]="x.color2"/>
-          <circle r="5" [attr.cx]="x.x_s" [attr.cy]="x.y_s" [attr.fill]="x.color1" stroke="#000000" stroke-width="1.5"/>
-          <!--Aura-->
-          <circle r="13" [attr.cx]="x.x_s" [attr.cy]="x.y_s" fill="transparent"
+          <g *ngFor="let x of svg_edges">
+            <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" [attr.stroke]="x.color2" stroke-width="5.4"/>
+            <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" [attr.stroke]="x.color3" stroke-width="5.4" stroke-dasharray="5,5"/>
+            <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" stroke="black" stroke-width="1.4"/>
+            <!--Aura-->
+            <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" stroke="transparent" stroke-width="8"
                   on-mouseover="x.mouse_over($event,true)" on-mouseleave="x.mouse_over($event,false)"
                   on-mousedown="x.mouse_down($event)" on-mouseup="x.mouse_up($event)"/>
-        </g>
+          </g>
 
-        <line [attr.x1]="pan_line_x_s_1" [attr.y1]="pan_line_y_s_1" [attr.x2]="pan_line_x_s_2" [attr.y2]="pan_line_y_s_2" stroke="red" stroke-width="0.7" stroke-dasharray="8,4"/>
+          <!--Os nodes ficam acima dos edges-->
+          <g *ngFor="let x of svg_nodes">
+            <circle r="11" [attr.cx]="x.x_s" [attr.cy]="x.y_s" [attr.fill]="x.color3"/>
+            <circle r="9" [attr.cx]="x.x_s" [attr.cy]="x.y_s" [attr.fill]="x.color2"/>
+            <circle r="5" [attr.cx]="x.x_s" [attr.cy]="x.y_s" [attr.fill]="x.color1" stroke="#000000" stroke-width="1.5"/>
+            <!--Aura-->
+            <circle r="13" [attr.cx]="x.x_s" [attr.cy]="x.y_s" fill="transparent"
+                    on-mouseover="x.mouse_over($event,true)" on-mouseleave="x.mouse_over($event,false)"
+                    on-mousedown="x.mouse_down($event)" on-mouseup="x.mouse_up($event)"/>
+          </g>
 
-        <line [attr.x1]="link_node_a?.x_s" [attr.y1]="link_node_a?.y_s" [attr.x2]="link_node_x_s_2" [attr.y2]="link_node_y_s_2" stroke="darkgreen" stroke-width="0.7" stroke-dasharray="4,2"/>
+          <line [attr.x1]="pan_line_x_s_1" [attr.y1]="pan_line_y_s_1" [attr.x2]="pan_line_x_s_2" [attr.y2]="pan_line_y_s_2" stroke="red" stroke-width="0.7" stroke-dasharray="8,4"/>
 
-        <!--Selecao, fica acima de todos-->
-        <rect [attr.x]="select_x" [attr.y]="select_y" [attr.width]="select_width" [attr.height]="select_height" [attr.fill]="select_fill"></rect>
+          <line [attr.x1]="link_node_a?.x_s" [attr.y1]="link_node_a?.y_s" [attr.x2]="link_node_x_s_2" [attr.y2]="link_node_y_s_2" stroke="darkgreen" stroke-width="0.7" stroke-dasharray="4,2"/>
 
-      </svg>
+          <!--Selecao, fica acima de todos-->
+          <rect [attr.x]="select_x" [attr.y]="select_y" [attr.width]="select_width" [attr.height]="select_height" [attr.fill]="select_fill"></rect>
+
+        </svg>
+      </div>
+
+
 
 
     </div>
@@ -175,22 +180,33 @@
       <!--Pra direita-->
       <div style="flex: 1; display: flex; flex-direction: row-reverse">
         <div>
+          <div class="input-group input-group-sm" style="height: 30px; margin-right: 5px; padding: 0">
+            <div class="input-group-addon hover1" (click)="switch_gmaps()" style="padding: 0 4px" [ngStyle]="{'background': (!gmaps_onoff)?'#ececec':'#00b2a4'}">
+              <i class="_ik _svg _gmaps _wh24"></i>
+            </div>
+          </div>
+        </div>
+        <div>
           <div class="input-group input-group-sm" style="height: 30px; margin-right: 5px;">
             <div class="input-group-addon hover1" (click)="step_zoom(true)">
-              <img class="tool" src="assets/img/magnifier-zoom-out.png">
+              <i class="_ik _svg _mag_zoom_out _f12 _wh12" style="color: #5b5b5b"></i>
             </div>
-            <div class="input-group-addon" style="border-bottom: 2px #009688 solid; display: flex; justify-content: center; width: 83px; padding: 3px;"
+            <div class="input-group-addon" style="border-bottom: 2px #009688 solid; display: flex; justify-content: center; width: 97px; padding: 3px;"
 
                  [ngClass]="{'has-danger': zoom_inp.invalid && zoom_inp.dirty }">
               <input class="form-control form-control-danger" type="text" style="font-size: 12px; width: 76px; padding: 2px; text-align: center"
                      [ngModel]="zoom | input_distancia" [input-distancia]="zoom" #zoom_inp="ngModel" name="zoom_inp" (do_after_change) = "zoom_or_center_changed()">
             </div>
             <div class="input-group-addon hover1" (click)="step_zoom(false)">
-              <img class="tool" src="assets/img/magnifier-zoom-in.png">
+              <i class="_ik _svg _mag_zoom_in _f12 _wh12" style="color: #5b5b5b"></i>
             </div>
           </div>
         </div>
-
+        <div style="height: 30px; display: flex; align-items: center;">
+          <div style="font-style: italic; font-size: 12px; padding: 0 6px; color: #009688">
+            ( {{indicador_mouse_x}}m ; {{indicador_mouse_y}}m )
+          </div>
+        </div>
       </div>
     </div>
 
