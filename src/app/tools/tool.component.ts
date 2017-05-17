@@ -5,15 +5,24 @@ import {A} from "../app.component";
 @Component({
   selector: 'app-tool',
   template: `
-    <div (click)="selecionar_tool()">
-        <img class="tool" src="assets/img/tools/{{nome_tool}}.png" [ngClass]="{'tool_selecionada': is_selected, 'tool_nao_selecionada': !is_selected}">
+    <div class="tool" (mousedown)="selecionar_tool()" [ngClass]="{'tool_selecionada': is_selected, 'tool_nao_selecionada': !is_selected}">
+        <!--<img class="tool" src="assets/img/tools/{{nome_tool}}.png" [ngClass]="{'tool_selecionada': is_selected, 'tool_nao_selecionada': !is_selected}">-->
+      <i class="_ik _b64 _{{nome_tool}}" [ngClass]="{'tool_selecionada': is_selected, 'tool_nao_selecionada': !is_selected}"></i>
+        
     </div>
 `,
   styles: [`
   
   .tool {
-    padding: 3px 5px;
     border: 1px solid rgb(112,112,112);
+    padding: 1px 0 0 5px;
+    width: 28px;
+    height: 24px;
+    margin: 2px;
+  }
+  ._ik._b64 {
+    padding: 0;
+    background-color: transparent;
   }
   .tool:hover { /*Nao funfa muito bem com ngStyle...*/
   background: rgb(190,230,253);

@@ -1,0 +1,15 @@
+Todos os icones e imagens utilizados serão mantidos em ik.css que, obviamente, pode ficar enorme.
+
+Todo e qualquer componente que possa incluir icone ou imagem terá, em seu styleUrls, ik.css na array de styles.
+
+Enquanto usar ng serve, e os arquivos de ng build tambem, ficarão maiores por causa de ik.css incluso em todos os componentes.
+
+Mas isso não é problema, pois desenvolvi um script em powershell que purifica os chunks, depois do build e antes do publish, mantendo neles somente o que é utilziado.
+
+O angular não faz isso automaticamente, eu testei, e o --aot não remove. Na internet o pessoal requisita isso, e existe o PurifyCSS, que deve ser acoplado ao webpack...
+Mas nao existe forma nativa nem mesmo de configurar o webpack no angular ainda, dai fica um hack muito complexo e insustentavel. Por isso fiz meu proprio script.
+
+Assim fica facil, usar e reutilizar, qualquer imagem e icone, em qualquer componente do kerp, sem se preocupar com performance/tamanho dos chunks.
+
+Por serem svg/b64, carregam junto com a pagina, sem delay, e não precisam carregar enormes arquivos de fonte ( como font awesome ).
+

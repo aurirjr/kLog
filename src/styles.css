@@ -1,1 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
+
+/*Isso aqui tem efeito parecido com criar um <style></style> diretament no index.html, mas aqui é melhor.*/
+/*Pode-se COMENTAR e DOCUMENTAR aqui a vontade, não vai pra produção. Os pre-processors do build criam um styles.23..bundle.css compactado e minimizado.*/
+
+/* ik.css, tudo que trata de imagens e icones. Ver doc na pasta IK. */
+@import "app/IK/ik.css";

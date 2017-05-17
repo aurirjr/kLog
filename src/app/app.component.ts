@@ -212,8 +212,9 @@ export class A implements OnInit, AfterViewInit {
 
         //Se esta segurando o mouse e existe um draggabe_element
         if(e.which == 1 && this.draggable_element != null) {
-          this.draggable_element._x_s(e.offsetX+8);
-          this.draggable_element._y_s(e.offsetY+8);
+          //Antigamente e.offsetX+8, mas depois passei a colocar o click de move no centro do cursor, dai nao precisa esse ajuste...
+          this.draggable_element._x_s(e.offsetX);
+          this.draggable_element._y_s(e.offsetY);
         } else {
 
           this.draggable_element = null;
@@ -221,8 +222,9 @@ export class A implements OnInit, AfterViewInit {
           //Aproveitando a linha de PAN pra dar MOVE com ctrl em varios nodes selecionados de azul!!
           if(e.which == 1 && e.ctrlKey && this.pan_line_x_s_1 != null && this.pan_line_y_s_1 != null) {
 
-            this.pan_line_x_s_2 = e.offsetX + 8; //Pequeno ajuste pra ficar visualmente legal
-            this.pan_line_y_s_2 = e.offsetY + 8;
+            //Antigamente e.offsetX+8, mas depois passei a colocar o click de move no centro do cursor, dai nao precisa esse ajuste...
+            this.pan_line_x_s_2 = e.offsetX; //OLD: Pequeno ajuste pra ficar visualmente legal
+            this.pan_line_y_s_2 = e.offsetY;
 
           } else {
             this.pan_line_x_s_1 = null;
@@ -329,7 +331,7 @@ export class A implements OnInit, AfterViewInit {
         //Requisitar texto pelo bootbox
         bootbox.prompt("Inserir texto", (txt) => {
           //Quando o usuario colocar o texto, adicionar um objeto do tipo Texto
-          this.svg_texts.push(new Text()._x_s(e.offsetX)._y_s(e.offsetY+12)._text(txt)); //Pequeno ajuste pra posicionar melhor em relacao o clique...
+          this.svg_texts.push(new Text()._x_s(e.offsetX)._y_s(e.offsetY+4)._text(txt)); //Pequeno ajuste pra posicionar melhor em relacao o clique...
         });
       }
       else if(this.selected_tool.nome_tool == 'move_hand' ) {

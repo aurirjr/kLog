@@ -1,0 +1,69 @@
+/*
+  IK stands for Icores e Imagens do Klog. Aqui que concentro todos os svg e base64 utilizados pelo sistema.
+  Todos eles estão em CSS, apesar de que cheguei a usar svg colocado no HTML. Os codigos disso estao em icos_learning, na garage.
+*/
+
+/*-------- ICONES --------------------------------------------------------------------------------------------------*\
+
+@@@@ OLD SVG ----------------
+
+  Sempre visitar https://icomoon.io, procurar o icone, gerar o SVG, e copiar o symbol. Pode remover o <title>. Rapidamente, com CTRL + DEL, alinas todo em uma mesma linha, e deixar tudo no estilo:
+
+  <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+     <symbol id="icon-arrow-right" viewBox="0 0 23 28"><path d="M23 15c0 ..."></path></symbol>
+     <symbol id="icon-arrow-right" viewBox="0 0 16 32"><path d="M23 15c0 ..."></path></symbol>
+     <symbol id="icon-arrow-right" viewBox="0 0 28 28"><path d="M23 15c0 ..."></path></symbol>
+    </defs>
+  </svg>
+
+  Utilizar assim no HTML:
+
+    <svg class="isvg XXX"><use xlink:href="#icon-nome-do-icon"></use></svg>
+
+  Onde XXX são classes de controle que utilizo aqui para controlar melhor os diferentes icones.
+
+De acordo com umas pesquisa que fiz, várias pessoas afirmaram que SVG é superior a utilizar fontes e png, por isso parei de usar as fontes de FontAwesome. (https://css-tricks.com/icon-fonts-vs-svg/)
+Além disso, usar png baixado por HTTP, e fontes (aot ou woff) baixadas por http, dão um certo delay que atrapalha um pouco a fluidez do programa. Sem falar na pouca performance que é baixar um pack
+gigante com 800 fontes, quando só se utiliza algumas. Assim SVG tem uma performance bem melhor, pois cada componente tem somente os icones de que precisa.
+Alem disso, não fico dependente do fontawesome, posso procurar quaisquer SVG em qualquer lugar da internet, em sites como IcoMoon ( que ja inclui Font Awesome ) e Icons8.
+
+Mas é preciso aprender algumas algumas técnicas para utilizar o SVG. Utilizar o font-awesome era um pouco mais simples, mas ele também tinha os mesmos defeitos que o SVG tem.
+
+CADA Icone do SVG responde diretamente a fonte, pois seu height e width são 1em. Pesquisei na net, e "em" é uma medida proporcional ao tamanho da fonte. Então o height e width do .isvg vai mudar em função da fonte atual no <svg>.
+Para o conteudo do SVG responder ao tamanho do <svg>, ele tem um viewBox, que define o inicio (0,0) e fim da imagem SVG. Esse viewBox varia pra cada icone.
+Assim, o que acontece é: O HTML altera o width e height do SVG. Como o SVG é 1em x 1em, então esse width e height tão ligados com o tamanho da fonte. Ao mudar o height e width, altera o conteúdo de dentro do SVG ( por causa do ViewBox ).
+ATENÇÃO pois existem várias situações onde só o tamanho da fonte não é suficiente. Margens, paddings, etc... Podem acabar mudando as dimensoes do SVG, sobre o efeito da fonte ( e do 1em ).
+Eu tento bloquear isso um pouco colocando min-width e min-height para cada grid. Mas é bom ficar atento!
+
+CADA icone tem um grid size ( conforme DOCs do IconMoon ). Se o gridsize de um icone for 14, então ele fica bacana em 14 x N ( 14px, 28px, 42px... ). Enquanto grids 16 ficam bacanas em 16px, 32px...
+Utilizar tamanhos diferentes disso também funciona, mas pode dar uma espécie de BLUR. Esse mesmo BLUR também existe no FontAwesome, basta acessar o site deles e mudar uma fonte 14px pra 16 ou 18px, ou uma 16px pra 14... (pelo Inspect) e ver imediatamente que perde o crisp.
+O crisp é a fonte bem sharp, com linhas em maxima definição. Enquanto o blue parece uma espécie de anti-alias.
+
+O IconMoon permite gerar icones de GRID 14, 16, 20... Basta clicar em icma do icone e alterar o GRID. Sempre vai depender da aplicação... É preciso gerar por lá, pq ele redezenha todo um SVG proprio praquele grid...
+Os icones que uso aqui serão sempre nos moldes: i_KK_GG, onde KK: Nome Original, seperado por _. KK: Tamanho do grid, se 14, 16, 18, 20...
+OBS: Não da pra saber o tamanho do GRID olhando pro ViewBox!! Pode parecer que um viewbox, por ser 0 0 28 28, tem grid 14, mas nao necessiariamente! Ver no ICONMOON ou no _final do nome do SVG.
+
+EDIT: Outra vantagem de SVG, é o uso em mobiles. Testei no celular, e a renderização é PERFEITA, melhor que no browser. Independe até de grid, de zooms... Testei uns 30 icones, abrindo direto de um projeto angular2 teste.
+
+@@@@ NEW SVG ----------------
+
+A alteração passa a ser a utilização do SVG diretamente no css, assim como as imagens base64!
+De acordo com o seguinte site, não é interessante guardar o SVG em base64 no CSS; Fica maior. Usar svg puro: https://css-tricks.com/probably-dont-base64-svg/
+
+@@@@ PNG BASE64  ----------------
+
+  Varias imagens são mais úteis como base64. Ao contrario do SVG, que é definido no final de cada HTML, as imagens vão pro final de cada CSS:
+
+  div.icon-favicon-kerp-16 {
+    width:16px; height:16px; display: inline-block; vertical-align: middle;
+    background-image:url(data:image/png;base64,iVBORw0K...VORK5CYII=);
+  }
+  div.imagem-etc-tal {
+    width:16px; height:16px; display: inline-block; vertical-align: middle;
+    background-image:url(data:image/png;base64,iVBORw0K...VORK5CYII=);
+  }
+
+  Não há site melhor que o https://www.base64-image.de/ para transformar qualquer imagem (ou várias) em base64, copiando rapidamente.
+
+\*----------------------------------------------------------------------------------------------------------------- */

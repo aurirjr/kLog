@@ -1,0 +1,20 @@
+::Limpando as classes de IK.css não utilizadas em cada chunk
+::powershell -File S:\Dropbox\...\Producao_PreProcess_Clean_IK.ps1
+::EDIT::
+::Se o IK.css for usado em alguma classe que não é lazy loaded ( ou seja, vai pro main ) então todo o IK.css vai pro main... O sistema não é burro, se ja carregou algo no main, não precisa lazy load...
+::Assim, não existe NENHUMA definição de ik.css nos chunls 0...chunk.js! Ou seja, esse meu script de clean de nada serve... Se ele for executado, vai limpar 95% do main.js, pq la tem pouca utilização... E o site vai ficar td sem icones e imagens...
+::Ele só serve se eu usar um ik.css pro main, só com o que o main usa, e outro que seja usado no restante do sistema... Assim faz sentido esse purify...
+::Pensei inclusive em não utilizar mais esse purify, e utilziar logo a classe IK.css carregada sempre. Mas quando o sistema crescer, quando tiver imagens grandes... Ai realmente perde toda a vantagem de performance. Em universo mobile|3g será util.
+::Não faz sentido carregar 100% de uma coisa que so vai usar 10%... Bom, nessa altura do campeonato percebi que uns 20 icones SVG consumiram 13Kb só, no js. Tambem percebi que base64 é uns 25% mais pesado que imagem da URL, mas tem a vantagem de carregamento sem delay, instantaneo.
+::Existem vantagens e desvantagens em utilziar base64 vs png. Mas por ter percebido esses delays de latencia, vou optar por continuar com png nas imagens relativamente pequenas. Somente eventuais grandes ( tirando o logo ) farei direfente...
+::http://stackoverflow.com/questions/1574961/how-much-faster-is-it-to-use-inline-base64-images-for-a-web-site-than-just-linki
+
+::Adotado então a estrategia de manter na main somente o que lhe interessa, criando um ik.css geral para todos, direto no style.css, com aquilo que pega em todos e na main (AppModule), e um ik_lazy.css para o que for aberto em lazy loaded (FeatureModules).
+
+::EDIT: Vou fazer melhor, vou manter o ik.css somente com:
+  - DEFINICOES GERAIS DO IK, como _ik, _ik.f14, etc..., etc...
+  - ICONES SVG, QUE SAO CONSTANTEMENTE USADOS EM QUALQUER MODULO E SAO LEVISSIMOS
+
+  :: CADA modulo que precisar de alguma imagem ou icone bem especifico, terá a definição exatamente no css do modulo!
+
+Então é isso, fazer a jogada de a coisa for muito geral vai pro IK.css, se for especifica, fica no modulo, pronto!!
