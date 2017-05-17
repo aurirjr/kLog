@@ -27,9 +27,11 @@ Write-Host '@@@@ BUILDING'
 
 #EDIT: Voltei a utilizar hash, pois estava tendo problema de cache... Então: --output-hashing none REMOVIDO
 
-Write-Host '@@@@ VCS'
+Write-Host '@@@@ VCS - Defina a commit msg:'
 
 $commsg = (Read-Host -Prompt 'Commit msg:')
+
+git add -A
 
 git commit -a -m "$commsg"
 
