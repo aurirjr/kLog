@@ -1,5 +1,5 @@
-import {AfterViewInit, Component, ComponentFactoryResolver, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
-import {Problema, ProblemaService} from "./Problema";
+import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {ProblemaService} from "./Problema";
 import {ToolComponent} from "./tools/tool.component";
 import {Node} from "./entidades/Node";
 import {Edge} from "./entidades/Edge";
@@ -63,12 +63,8 @@ export class A implements OnInit, AfterViewInit {
   // <svg:g #root_svg_placeholder></svg:g>
   //</editor-fold>
 
-
-
-  constructor(private _CFR: ComponentFactoryResolver, public _P: ProblemaService) {
-
+  constructor(public _P: ProblemaService) {
     A.a = this; //Aplicando a referencia desse objeto AppComponent (A) pra ser acessada de qualquer lugar....
-
   }
 
   //Controle de selecao
@@ -110,6 +106,7 @@ export class A implements OnInit, AfterViewInit {
   public zoom_or_center_changed() {
 
     if(this.gmaps_onoff && gMaps.gmap != null) {
+
       //Considerando zoom factor (m/p) de gMap
       this._P.p.zoom_fator = gMaps.get_meters_per_pixel();
 

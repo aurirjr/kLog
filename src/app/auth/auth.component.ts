@@ -6,6 +6,7 @@ import {Edge} from "../entidades/Edge";
 import {Node} from "../entidades/Node";
 import {A} from "../app.component";
 import {Distancia} from "../entidades/Distancia";
+import {gMaps} from "../GoogleMaps";
 
 declare var $: any;
 declare var firebase: any;
@@ -168,6 +169,13 @@ export class AuthComponent implements OnInit {
   abrir_pro(pro: Problema) {
 
     this._P.p = this.processar_problema_salvar_ou_abrir(pro,false);
+
+    //Se tiver com gmaps ligado, e um mapa carregado, entao
+    if(A.a.gmaps_onoff && gMaps.gmap != null) {
+      gMaps.procurar_zoom_inicial_mais_proximo(this._P.p.zoom_fator);
+      //Setando o melhor zoom para o zoom que foi salvo...
+      gMaps.gmap.setZoom(gMaps.zoom_inicial);
+    }
 
     //Ja que foi redefinido zoom e centros, recalcular tudo...
     A.a.zoom_or_center_changed();
