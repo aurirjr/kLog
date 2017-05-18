@@ -51,7 +51,7 @@
       <div style="padding: 10px;">
         <app-tool [nome_tool]='"add_node"'></app-tool>
         <app-tool [nome_tool]='"link_nodes"'></app-tool>
-        <app-tool [nome_tool]='"temp_node_list"'></app-tool>
+        <app-tool [nome_tool]='"temp_node_list"' [selecionavel]="false" (click)="switch_prancheta_onoff()"></app-tool>
         <app-tool [nome_tool]='"move_hand"'></app-tool>
         <app-tool [nome_tool]='"insert_text"'></app-tool>
         <app-tool [nome_tool]='"delete"' [selecionavel]="false" (click)="deletar_selecionados()"></app-tool>
@@ -63,14 +63,38 @@
     <!--COL 2-->
     <div style="flex: 1; display: flex; padding: 0; margin: 3px;">
 
+      <div id="prancheta" *ngIf="prancheta_onoff" style="margin: 0 10px 0 0; height: 100%; background:white; border: 1px solid gray; border-radius: 6px;"
+      [ngStyle]="{'width' : (hide_map) ? '100%' : '50%' }">
+        <div style="display: flex; flex-direction: column">
+          <!--Prencheta ROW 1-->
+          <div style="justify-content: space-between; display: flex;">
+            <div style="border-bottom: 1px dashed #868686; flex: 1;">
+              <span style="margin: 4px 0 0 5px; font-size: 14px; font-weight: bold; color: #4e4e4e">Vértices</span>
+            </div>
+            <div style="border-bottom: 1px dashed #868686;">
+              <i class="_ik _p-0-2 _clickPurple" style="color: gray;" (click)="hide_map=!hide_map"><i class="_ik _svg _align_right_g10 _f20 _wh20 _vam _mt-3"></i></i>
+            </div>
+          </div>
+          <!--Prencheta ROW 2-->
+          <div>...</div>
+          <!--Prencheta ROW 3-->
+          <div style="border-bottom: 1px dashed #868686; flex: 1;">
+            <span style="margin: 4px 0 0 5px; font-size: 14px; font-weight: bold; color: #4e4e4e">Arestas</span>
+          </div>
+          <div>...</div>
+        </div>
+      </div>
+
       <!--COLOR PICKER, ja que o intellij nao me mostra as cores em SVG, uso isso aqui...-->
       <ng-template style="background: darkgreen;" hidden></ng-template>
-      <div style="width: 100%; margin: 0; height: 100%; background:rgb(255,255,214); border: 1px dashed gray; position: relative;">
+      <div style="width: 100%; margin: 0; height: 100%; background:rgb(255,255,214); border: 1px dashed gray; position: relative;" [hidden]="prancheta_onoff && hide_map"
+      #wrapper>
         <!--Tanto o svg como o div do google maps sao absolute em relacao ao relative acima... Assim, pairam no mesmo lugar-->
         <div id="map" style="background: transparent; position: absolute; width: 100%; height: 100%" *ngIf="gmaps_onoff"></div>
-        <svg id="root_svg" style=" width: 100%; height: 100%; position: absolute; pointer-events: all;" [ngClass]="'_cur_'+(selected_tool?.nome_tool)"
+        <svg id="root_svg" style="height: 100%; position: absolute;" [ngClass]="'_cur_'+(selected_tool?.nome_tool)"
+             [style.width]="wrapper.offsetWidth" [style.height]="wrapper.offsetHeight"
              on-mousemove="mouse_moving($event)" on-mousedown="mouse_down($event)" on-mouseleave="mouse_leave($event)" on-mouseup="mouse_up($event)"
-             on-mousewheel="mouse_wheel($event)" (window:resize)="resetar_tamanhos_mapa($event)" on-mouseenter="mouse_enter($event)">
+             on-mousewheel="mouse_wheel($event)" (window:resize)="resetar_tamanhos_mapa()" on-mouseenter="mouse_enter($event)">
 
           <!--OLD: [ngStyle]="{'cursor': (selected_tool == null) ? 'default' : 'url(assets/img/tools/cursors/'+selected_tool?.nome_tool+'.png), auto'}"-->
 
@@ -114,9 +138,6 @@
 
         </svg>
       </div>
-
-
-
 
     </div>
 

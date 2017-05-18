@@ -81,6 +81,12 @@ export class gMaps {
       )
     );
   }
+  public static resetar_tamanho_mapa() {
+    //Com isso, altera o tamanho do mapa
+    if(this.gmap!=null) {
+      google.maps.event.trigger(this.gmap, "resize");
+    }
+  }
 }
 
 

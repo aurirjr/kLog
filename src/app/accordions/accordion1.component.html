@@ -4,7 +4,8 @@
     <i class="_ik _svg _arrow_circle _p-0-2 _f12 _wh18" style="color: white; margin-right: 3px;" [ngClass]="{'_r180': !hidden}"></i><!--
     --><span style="margin-top: -1px">{{titulo}}</span>
   </div>
-  <div class="accordion_content" [hidden]="hidden">
+  <!--Controle de accodions com ngIf tem melhor performance do que o antigo [hidden]-->
+  <div class="accordion_content" *ngIf="!hidden">
     <ng-content></ng-content>
   </div>
 </div>

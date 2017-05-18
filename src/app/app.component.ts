@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {ProblemaService} from "./Problema";
 import {ToolComponent} from "./tools/tool.component";
 import {Node} from "./entidades/Node";
@@ -174,7 +174,7 @@ export class A implements OnInit, AfterViewInit {
 
   //Variaveis da pan_line
   pan_line_x_s_1 = null; pan_line_y_s_1 = null; pan_line_x_s_2 = null; pan_line_y_s_2 = null;
-  //O centro comeca com metade do tamanho do svg, definido em
+  //O centro comeca com metade do tamanho do svg, definido em resetar_tamanhos_mapa(). //Isso precisa ser chamado em qualquer resize do svg
   x_s_middle_center = 0; y_s_middle_center = 0;
 
   //Variaveis da ferramenta link_node
@@ -259,7 +259,7 @@ export class A implements OnInit, AfterViewInit {
     } else {
       //Se esta movendo o mouse sem nenhuma tool, e o botao esta segurado, entao realizar PAN
       //Se comecar o PAN de fora, ou seja, nao foi de um mouse_down dentro... Entao nao considerar...
-      if(e.which == 1 && this.pan_line_x_s_1 != null && this.pan_line_y_s_1 != null) {
+      if(e.which == 1 && this.pan_line_x_s_1 > 0 && this.pan_line_y_s_1 > 0) {
         this.pan_line_x_s_2 = e.offsetX;
         this.pan_line_y_s_2 = e.offsetY;
       } else {
@@ -516,12 +516,25 @@ export class A implements OnInit, AfterViewInit {
 
   }
 
-  resetar_tamanhos_mapa(e) {
+  @ViewChild('wrapper') wrapper;
 
+  resetar_tamanhos_mapa() {
+    //EDIT: Esse evento só é chamado quando a window muda de tamanho... Não consegui um onresize, ou on-resize ou (resize) independente de qualquer coisa...
+    //Portanto, alterações por jquerui resizable, ou por aparecer prancheta ou similares... Todas elas devem disparar essa função...
+
+    /*OLD
     //O evento refere-se a window... Então, pegar novamente os tamanhos com jQuery...
-
     this.x_s_middle_center = $('#root_svg').width()/2;
     this.y_s_middle_center = $('#root_svg').height()/2;
+    */
+
+    //NEW:
+    this.x_s_middle_center = this.wrapper.nativeElement.offsetWidth/2;
+    this.y_s_middle_center = this.wrapper.nativeElement.offsetHeight/2;
+
+    //Com isso, altera o tamanho do mapa do gMaps tambem
+    gMaps.resetar_tamanho_mapa();
+
     this.zoom_or_center_changed();
 
   }
@@ -607,7 +620,7 @@ export class A implements OnInit, AfterViewInit {
       .attr("r", "10")
       .attr("style", "fill:white;stroke:black;stroke-width:5");*/
 
-    this.resetar_tamanhos_mapa(null);
+    this.resetar_tamanhos_mapa();
 
     //let temp_teste_x = $('#root_svg').width();
     //let temp_teste_y = $('#root_svg').height();
@@ -689,6 +702,33 @@ export class A implements OnInit, AfterViewInit {
 
   mudar_estilo_mapa(estilo : string) {
     gMaps.gmap.setMapTypeId(estilo);
+  }
+
+  prancheta_onoff = false;
+  //prancheta_onoff = true; //TempDebug
+  hide_map = false;
+
+  switch_prancheta_onoff() {
+
+    this.hide_map = false; //Resetando
+
+    this.prancheta_onoff = !this.prancheta_onoff;
+
+    if(this.prancheta_onoff) {
+      //Configurando o resize da prancheta, depois do ngIf claro:
+      setTimeout(()=>{
+        $('#prancheta').resizable({
+          handles: 'e',
+          resize: () => { this.resetar_tamanhos_mapa() }
+        });
+      },0);
+    }
+
+    //Sempre que mostrar ou esconder a prancheta, resetar o tamanho do mapa, ja que o svg mudou
+    setTimeout(()=>{
+      //Tem que resetar depois da prancheta aparecer, pra da tempo do ngIf mostra o elemento e os tamanhos mudarem...
+      this.resetar_tamanhos_mapa();
+    },0);
   }
 
 }

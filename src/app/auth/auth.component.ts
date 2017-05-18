@@ -137,7 +137,20 @@ export class AuthComponent implements OnInit {
 
     //Essa funcao vai ser chamada a cada novo problema adicionado, bem como nos problemas inicias ao realizar login
     this.users_db_ref.on('child_added', (data) => {
-      this.Problemas_Users.push(data.val());
+      //EDIT: Passei a precisar verificar aqui tambem se o problema ja esta aqui... Pois noto que o firebase executa esse add varias vezes... Entao nao da so pra ir adicionando...
+      let jatinha = false;
+      for(let k = 0; k < this.Problemas_Users.length; k++) {
+        if(this.Problemas_Users[k].titulo == data.val().titulo) {
+          this.Problemas_Users[k] = data.val();
+          jatinha = true;
+          break;
+        }
+      }
+      if(jatinha == false)
+      {
+        //Adicionar somente se nao tinha...
+        this.Problemas_Users.push(data.val());
+      }
       this._CD.detectChanges();
     });
 
@@ -180,6 +193,9 @@ export class AuthComponent implements OnInit {
     //Ja que foi redefinido zoom e centros, recalcular tudo...
     A.a.zoom_or_center_changed();
 
+    /*Aqui percebi uma diferença entre ambiente de desenvolvimento e de produção... Por algum motivo, ta existindo um lag em produção...
+    * Quando fecha o modal que recarrega os pontos do svg... Nao sei se é algum problema dessa versão do Angular, talvez...
+    * Estou disparando esse this_CD muito frequentemente... Algo que praticamente não faço no projeto do Kerp... De qualquer forma, isso esta longe de ser prioritário. */
     this._CD.detectChanges();
 
   }
