@@ -9,6 +9,7 @@ import { Accordion2Component } from './accordions/accordion2.component';
 import { ToolComponent } from './tools/tool.component';
 import {InputDistanciaDirective, InputDistanciaPipe} from "./pipe_directives_services/input-distancia.pipe.directive";
 import { AuthComponent } from './auth/auth.component';
+import {ProblemaService} from "./Problema";
 
 @NgModule({
   declarations: [
@@ -25,7 +26,7 @@ import { AuthComponent } from './auth/auth.component';
     FormsModule,
     HttpModule
   ],
-  providers: [],
+  providers: [ProblemaService],
   entryComponents: [A],
   bootstrap: [A]
 })

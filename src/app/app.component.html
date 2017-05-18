@@ -10,8 +10,8 @@
     <!--COL 2-->
     <div style="flex: 1; display: flex; justify-content: space-between">
 
-      <div>
-        <!--Aqui iria o menu-->
+      <div style="display: flex; align-items: center; justify-content: center;">
+        <span style="font-size: 16px; line-height: 1em; margin: 4px 0 0 5px">{{_P.p.titulo}}</span>
       </div>
 
       <div style="display: flex;">
@@ -68,7 +68,7 @@
       <div style="width: 100%; margin: 0; height: 100%; background:rgb(255,255,214); border: 1px dashed gray; position: relative;">
         <!--Tanto o svg como o div do google maps sao absolute em relacao ao relative acima... Assim, pairam no mesmo lugar-->
         <div id="map" style="background: transparent; position: absolute; width: 100%; height: 100%" *ngIf="gmaps_onoff"></div>
-        <svg id="root_svg" style=" width: 100%; height: 100%; position: absolute" [ngClass]="'_cur_'+(selected_tool?.nome_tool)"
+        <svg id="root_svg" style=" width: 100%; height: 100%; position: absolute; pointer-events: all;" [ngClass]="'_cur_'+(selected_tool?.nome_tool)"
              on-mousemove="mouse_moving($event)" on-mousedown="mouse_down($event)" on-mouseleave="mouse_leave($event)" on-mouseup="mouse_up($event)"
              on-mousewheel="mouse_wheel($event)" (window:resize)="resetar_tamanhos_mapa($event)" on-mouseenter="mouse_enter($event)">
 
@@ -77,14 +77,14 @@
           <!--Grupo do pan, nao da mt certo pq nao tem como relativizar a posicao dos child... Mas colocar um transform_text funciona! -->
           <!--<g [attr.transform]="transform_text"></g>-->
 
-          <g *ngFor="let x of svg_texts">
+          <g *ngFor="let x of _P.p.svg_texts">
             <text r="13" [attr.x]="x.x_s" [attr.y]="x.y_s" [attr.fill]="x.fill_color" style="font-size: 12px;" text-anchor="middle"
                   [attr.font-weight]="x.font_weight" [attr.text-decoration]="x.text_decoration"
                   on-mouseover="x.mouse_over($event,true)" on-mouseleave="x.mouse_over($event,false)"
                   on-mousedown="x.mouse_down($event)" on-mouseup="x.mouse_up($event)">{{x.text}}</text>
           </g>
 
-          <g *ngFor="let x of svg_edges">
+          <g *ngFor="let x of _P.p.g.edges">
             <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" [attr.stroke]="x.color2" stroke-width="5.4"/>
             <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" [attr.stroke]="x.color3" stroke-width="5.4" stroke-dasharray="5,5"/>
             <line [attr.x1]="x.nA.x_s" [attr.y1]="x.nA.y_s" [attr.x2]="x.nB.x_s" [attr.y2]="x.nB.y_s" stroke="black" stroke-width="1.4"/>
@@ -95,7 +95,7 @@
           </g>
 
           <!--Os nodes ficam acima dos edges-->
-          <g *ngFor="let x of svg_nodes">
+          <g *ngFor="let x of _P.p.g.nodes">
             <circle r="11" [attr.cx]="x.x_s" [attr.cy]="x.y_s" [attr.fill]="x.color3"/>
             <circle r="9" [attr.cx]="x.x_s" [attr.cy]="x.y_s" [attr.fill]="x.color2"/>
             <circle r="5" [attr.cx]="x.x_s" [attr.cy]="x.y_s" [attr.fill]="x.color1" stroke="#000000" stroke-width="1.5"/>
@@ -184,6 +184,22 @@
             <div class="input-group-addon hover1" (click)="turnon_gmaps(!gmaps_onoff)" style="padding: 0 4px" [ngStyle]="{'background': (!gmaps_onoff)?'#ececec':'#00b2a4'}">
               <i class="_ik _svg _gmaps _wh24"></i>
             </div>
+            <div class="input-group-addon" style="padding: 0 2px" *ngIf="gmaps_onoff">
+              <div style="display: flex; font-size: 10px; flex-direction: column; margin: 0; padding: 0">
+                <div style="display: flex;">
+                  <div class="botoes_hrst" (click)="mudar_estilo_mapa('hybrid')">H</div>
+                  <div class="botoes_hrst" (click)="mudar_estilo_mapa('roadmap')">R</div>
+                </div>
+                <div style="display: flex;">
+                  <div class="botoes_hrst" (click)="mudar_estilo_mapa('satellite')">S</div>
+                  <div class="botoes_hrst" (click)="mudar_estilo_mapa('terrain')">T</div>
+                </div>
+              </div>
+            </div>
+            <!--HYBRID	This map type displays a transparent layer of major streets on satellite images.-->
+            <!--ROADMAP	This map type displays a normal street map.-->
+            <!--SATELLITE	This map type displays satellite images.-->
+            <!--TERRAIN	This map type displays maps with physical features such as terrain and vegetation.-->
           </div>
         </div>
         <div>
@@ -195,7 +211,7 @@
 
                  [ngClass]="{'has-danger': zoom_inp.invalid && zoom_inp.dirty }">
               <input class="input-group-addon" type="text" style="font-size: 12px; width: 76px; padding: 2px; text-align: center; background: white"
-                     [ngModel]="zoom | input_distancia" [input-distancia]="zoom" #zoom_inp="ngModel" name="zoom_inp" (do_after_change) = "zoom_or_center_changed()">
+                     [ngModel]="_P.p.zoom | input_distancia" [input-distancia]="_P.p.zoom" #zoom_inp="ngModel" name="zoom_inp" (do_after_change) = "zoom_or_center_changed()">
             </div>
             <div class="input-group-addon hover1" (click)="step_zoom(false)">
               <i class="_ik _svg _mag_zoom_in _f12 _wh12" style="color: #5b5b5b"></i>

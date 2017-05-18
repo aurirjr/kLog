@@ -32,7 +32,6 @@ export class Node {
     return this;
   }
 
-
   //----------------------------------- Logica
 
   public x_m : number; //Posicao em metros, do problema
@@ -116,7 +115,7 @@ export class Node {
       //Mouse-up em cima de um node, quando se esta usando link_nodes e tem um link_node_a setado, significa o segundo node
       if(A.a.selected_tool.nome_tool == 'link_nodes' && A.a.link_node_a != null ) {
         //Criar o link:
-        A.a.svg_edges.push(new Edge()._nA(A.a.link_node_a)._nB(this));
+        A.a._P.p.g.edges.push(new Edge()._nA(A.a.link_node_a)._nB(this));
       }
       else if (A.a.selected_tool.nome_tool == 'move_hand') {
         A.a.draggable_element = null;

@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ComponentFactoryResolver, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
-import {Problema} from "./Problema";
+import {Problema, ProblemaService} from "./Problema";
 import {ToolComponent} from "./tools/tool.component";
 import {Node} from "./entidades/Node";
 import {Edge} from "./entidades/Edge";
@@ -9,7 +9,7 @@ import {FG1} from "app/funcoes_globais/FuncoesGlobais1";
 import {Solver_Dijkstra} from "./solvers/Solver_Dijkstra";
 import {Graph} from "./entidades/Graph";
 import {Path} from "app/entidades/Path";
-import {gMaps, GoogleMapsLoader} from "./GoogleMaps";
+import {gMaps} from "./GoogleMaps";
 
 declare var $: any;
 declare var bootbox: any;
@@ -24,8 +24,6 @@ export class A implements OnInit, AfterViewInit {
   //AC, AppComponent
 
   public static a: A; //Referencia global
-  problema_atual : Problema;
-
   selected_tool: ToolComponent;
 
   //Referencia estatic da classe Node para ser usada na GUI
@@ -65,11 +63,9 @@ export class A implements OnInit, AfterViewInit {
   // <svg:g #root_svg_placeholder></svg:g>
   //</editor-fold>
 
-  svg_nodes : Array<Node> = new Array<Node>();
-  svg_edges : Array<Edge> = new Array<Edge>();
-  svg_texts : Array<Text> = new Array<Text>();
 
-  constructor(private _CFR: ComponentFactoryResolver) {
+
+  constructor(private _CFR: ComponentFactoryResolver, public _P: ProblemaService) {
 
     A.a = this; //Aplicando a referencia desse objeto AppComponent (A) pra ser acessada de qualquer lugar....
 
@@ -101,7 +97,7 @@ export class A implements OnInit, AfterViewInit {
   recontar_selecao_count() {
     let new_blue_count = 0;
     let new_orange_count = 0;
-    for(var node of this.svg_nodes) {
+    for(var node of this._P.p.g.nodes) {
       if(node.selected_blue) new_blue_count++;
       if(node.selected_orange) new_orange_count++;
     }
@@ -111,40 +107,36 @@ export class A implements OnInit, AfterViewInit {
     this.selected_orange_count = new_orange_count;
   }
 
-  //Controle de zoom
-  public zoom : Distancia = new Distancia()._x_und(50,'km'); //Quantidade de metros em 83px de tela, que é o tamanho da linha verde embaixo do problema de zoom... Default é 100m / 83px
-  public zoom_fator : number = this.zoom.x_m / 83; //50Km em 83px - Foi esse valor que a escala do google medeu com zoom level 8, que é o zoom level inicial
-
   public zoom_or_center_changed() {
 
     if(this.gmaps_onoff && gMaps.gmap != null) {
       //Considerando zoom factor (m/p) de gMap
-      this.zoom_fator = gMaps.get_meters_per_pixel();
+      this._P.p.zoom_fator = gMaps.get_meters_per_pixel();
 
       //Como o zoom factor e considerado de la, então o zoom (Distancia) que aparece na tela vem desse zoomFactor
       //O que vai aparecer na tela terá uma imprecisão de varias casas decimais... Mas não tem problema, internamente o zoom factor ta correto...
-      this.zoom = new Distancia()._x_und(Math.floor(this.zoom_fator*83),'m')._und(this.zoom.und); //Define em metro, depois converte pra unidade que ja tava aparecendo antes...
+      this._P.p.zoom = new Distancia()._x_und(Math.floor(this._P.p.zoom_fator*83),'m')._und(this._P.p.zoom.und); //Define em metro, depois converte pra unidade que ja tava aparecendo antes...
 
       //Quando se usa gMaps, ao contrario do zoom, que é definido no Grid em função do gMaps... O centro é definido no Grid primeiro, e no gMaps em função do Grid...
       //O google carregou com uma latInicial e uma lngInicial, que correspondem a x_m_centro = 0 e y_m_centro = 0;
       //Agora, tenho que especificar novas lat e lng pro gMaps, baseado nos novos x_m_centro e y_m_centro.
       //Para tanto, criei a a função recalcular_centro.
-      gMaps.recalcular_centro(this.x_m_centro, this.y_m_centro);
+      gMaps.recalcular_centro(this._P.p.x_m_centro, this._P.p.y_m_centro);
 
     } else {
       //Considerando zoom normal:
 
       //Recalculando o zoom factor...
-      this.zoom_fator = this.zoom.x_m / 83;
+      this._P.p.zoom_fator = this._P.p.zoom.x_m / 83;
     }
 
     //Se o zoom mudou, recalcular todos os x_s e y_s:
-    for(let node of this.svg_nodes) {
+    for(let node of this._P.p.g.nodes) {
       node._x_m(node.x_m); //Isso redfine o x_m, que nao mudou, mas nisso recalcula-se o x_s...
       node._y_m(node.y_m);
     }
 
-    for(let text of this.svg_texts) {
+    for(let text of this._P.p.svg_texts) {
       text._x_m(text.x_m); //Isso redfine o x_m, que nao mudou, mas nisso recalcula-se o x_s...
       text._y_m(text.y_m);
     }
@@ -175,9 +167,9 @@ export class A implements OnInit, AfterViewInit {
       //Recalculando zoom normal:
       //EU RECRIO uma nova Distancia, para disparar o "zoom | input_distancia", pq nao quero usar pipes impuros, e colocar zoom.x_m nao da certo tb...
       if(up_down) {
-        this.zoom = new Distancia()._x_und(Math.round(this.zoom.x*(1+this.mouse_wheel_zoom_step) * 1000) / 1000,this.zoom.und); //Multiplicando pot 1+passo e arredodando pra 3 casas decimais
+        this._P.p.zoom = new Distancia()._x_und(Math.round(this._P.p.zoom.x*(1+this.mouse_wheel_zoom_step) * 1000) / 1000,this._P.p.zoom.und); //Multiplicando pot 1+passo e arredodando pra 3 casas decimais
       } else {
-        this.zoom = new Distancia()._x_und(Math.round(this.zoom.x*(1-this.mouse_wheel_zoom_step) * 1000) / 1000,this.zoom.und); //Mesma coisa, mas é 1 - o passo..
+        this._P.p.zoom = new Distancia()._x_und(Math.round(this._P.p.zoom.x*(1-this.mouse_wheel_zoom_step) * 1000) / 1000,this._P.p.zoom.und); //Mesma coisa, mas é 1 - o passo..
       }
     }
     this.zoom_or_center_changed();
@@ -187,8 +179,6 @@ export class A implements OnInit, AfterViewInit {
   pan_line_x_s_1 = null; pan_line_y_s_1 = null; pan_line_x_s_2 = null; pan_line_y_s_2 = null;
   //O centro comeca com metade do tamanho do svg, definido em
   x_s_middle_center = 0; y_s_middle_center = 0;
-  //Controlando que posicao do mapa logico, real, esta no centro da tela
-  x_m_centro = 0; y_m_centro = 0; //Quando der PAN, alterar esses valores
 
   //Variaveis da ferramenta link_node
   link_node_a : Node;
@@ -308,7 +298,7 @@ export class A implements OnInit, AfterViewInit {
           this.select_start_y = e.offsetY;
         } else if(this.selected_tool.nome_tool == 'add_node') {
           //Adicionando NODE
-          this.svg_nodes.push(new Node()._x_s(e.offsetX)._y_s(e.offsetY));
+          this._P.p.g.nodes.push(new Node()._x_s(e.offsetX)._y_s(e.offsetY));
         }
         else if(this.selected_tool.nome_tool == 'move_hand') {
           //Usando a linha de pan pra move com ctrl!!
@@ -335,7 +325,7 @@ export class A implements OnInit, AfterViewInit {
       if(this.selected_tool.nome_tool == 'selection_blue' || this.selected_tool.nome_tool == 'selection_orange') {
         //Apos qualquer mudanca na area de selecao, calcular quais sao os nodes selecionados
         //Sao todos aqueles onde x e y se encontram dentro do quadrado:
-        for(let node of this.svg_nodes) {
+        for(let node of this._P.p.g.nodes) {
           //Se estiver dentro do quadrado, então esta selecionado...
           if(node.x_s > this.select_x && node.x_s < (this.select_x + this.select_width) && node.y_s > this.select_y && node.y_s < (this.select_y + this.select_height)) {
             node.invert_select(this.selected_tool.nome_tool);
@@ -343,7 +333,7 @@ export class A implements OnInit, AfterViewInit {
         }
         if(!e.ctrlKey) {
           //O mesmo vale para textos:
-          for(let text of this.svg_texts) {
+          for(let text of this._P.p.svg_texts) {
             //Se estiver dentro do quadrado, então esta selecionado...
             if(text.x_s > this.select_x && text.x_s < (this.select_x + this.select_width) && text.y_s > this.select_y && text.y_s < (this.select_y + this.select_height)) {
               text.invert_select(this.selected_tool.nome_tool);
@@ -351,7 +341,7 @@ export class A implements OnInit, AfterViewInit {
           }
           //Selecionando tambem edges...
           //No caso dos edges, se aplica a inversao neles se eles estiverem com as duas pontas dentro do que foi selecionado
-          for(let edge of this.svg_edges) {
+          for(let edge of this._P.p.g.edges) {
             if((edge.nA.x_s > this.select_x && edge.nA.x_s < (this.select_x + this.select_width) && edge.nA.y_s > this.select_y && edge.nA.y_s < (this.select_y + this.select_height))
               && (edge.nB.x_s > this.select_x && edge.nB.x_s < (this.select_x + this.select_width) && edge.nB.y_s > this.select_y && edge.nB.y_s < (this.select_y + this.select_height))) {
               edge.invert_select(this.selected_tool.nome_tool);
@@ -365,7 +355,7 @@ export class A implements OnInit, AfterViewInit {
         //Requisitar texto pelo bootbox
         bootbox.prompt("Inserir texto", (txt) => {
           //Quando o usuario colocar o texto, adicionar um objeto do tipo Texto
-          this.svg_texts.push(new Text()._x_s(e.offsetX)._y_s(e.offsetY+4)._text(txt)); //Pequeno ajuste pra posicionar melhor em relacao o clique...
+          this._P.p.svg_texts.push(new Text()._x_s(e.offsetX)._y_s(e.offsetY+4)._text(txt)); //Pequeno ajuste pra posicionar melhor em relacao o clique...
         });
       }
       else if(this.selected_tool.nome_tool == 'move_hand' ) {
@@ -374,7 +364,7 @@ export class A implements OnInit, AfterViewInit {
         if(e.which == 1 && this.draggable_element == null && e.ctrlKey) {
           if(!e.shiftKey) //Sem shift, apenas move...
           {
-            for(let node of this.svg_nodes) {
+            for(let node of this._P.p.g.nodes) {
               if(node.selected_blue) {
                 //Apenas movendo
                 //Mesma movimentação do PAN! So que sem mudar centro...
@@ -383,7 +373,7 @@ export class A implements OnInit, AfterViewInit {
               }
             }
             //Tambem mover os textos!
-            for(let text of this.svg_texts) {
+            for(let text of this._P.p.svg_texts) {
               if(text.selected_blue) {
                 //Mesma movimentação do PAN! So que sem mudar centro...
                 text._x_s(text.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1);
@@ -402,7 +392,7 @@ export class A implements OnInit, AfterViewInit {
 
             let nodes_e_clones : Map<Node,Node> = new Map<Node,Node>();
 
-            for(let edge of this.svg_edges) {
+            for(let edge of this._P.p.g.edges) {
               if(edge.selected_blue) {
                 //Encontrando os nodes clonados pra ligar com esse edge... Se ainda nao existir, então criar...
                 let node_clonado_nA : Node;
@@ -416,7 +406,7 @@ export class A implements OnInit, AfterViewInit {
                     ._x_s(edge.nA.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1)
                     ._y_s(edge.nA.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
                   nodes_e_clones.set(edge.nA,node_clonado_nA);
-                  this.svg_nodes.push(node_clonado_nA);
+                  this._P.p.g.nodes.push(node_clonado_nA);
                 }
 
                 node_clonado_nB = nodes_e_clones.get(edge.nB);
@@ -427,24 +417,24 @@ export class A implements OnInit, AfterViewInit {
                     ._x_s(edge.nB.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1)
                     ._y_s(edge.nB.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
                   nodes_e_clones.set(edge.nB,node_clonado_nB);
-                  this.svg_nodes.push(node_clonado_nB);
+                  this._P.p.g.nodes.push(node_clonado_nB);
                 }
 
                 //Adicionando o clone do edge:
-                this.svg_edges.push(new Edge()._nA(node_clonado_nA)._nB(node_clonado_nB));
+                this._P.p.g.edges.push(new Edge()._nA(node_clonado_nA)._nB(node_clonado_nB));
               }
             }
 
             //Agora vou checar se algum node avulso, selecionado, não foi copiado...
             let nodes_ja_copiados : Array<Node> = Array.from(nodes_e_clones.keys());
 
-            for(let node of this.svg_nodes) {
+            for(let node of this._P.p.g.nodes) {
               if(node.selected_blue) {
 
                 //Se nao foi copiado ainda, copiar
                 if(!nodes_ja_copiados.includes(node)) {
                   //Copiando os nodes...
-                  this.svg_nodes.push(new Node()
+                  this._P.p.g.nodes.push(new Node()
                     ._x_s(node.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1)
                     ._y_s(node.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1));
 
@@ -454,10 +444,10 @@ export class A implements OnInit, AfterViewInit {
             }
 
             //Tambem copiar os textos!
-            for(let text of this.svg_texts) {
+            for(let text of this._P.p.svg_texts) {
               if(text.selected_blue) {
                 //Mesma movimentação do PAN! So que sem mudar centro...
-                this.svg_texts.push(
+                this._P.p.svg_texts.push(
                   new Text()
                     ._x_s(text.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1)
                     ._y_s(text.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1)
@@ -473,8 +463,8 @@ export class A implements OnInit, AfterViewInit {
       //Se levantou o mouse sem nenhuma tool, entao é PAN
       //Deslocando o local logico do mapa que ficará no centro!!
       //Perceba que eu pego o que foi deslocado no PAN, em valores SCREEN, e transformo no deslocamento em METROS, dividindo por zoom fator...
-      this.x_m_centro -= FG1.get_x_m_from_x_s(this.pan_line_x_s_2) - FG1.get_x_m_from_x_s(this.pan_line_x_s_1);
-      this.y_m_centro -= FG1.get_y_m_from_y_s(this.pan_line_y_s_2) - FG1.get_y_m_from_y_s(this.pan_line_y_s_1);
+      this._P.p.x_m_centro -= FG1.get_x_m_from_x_s(this.pan_line_x_s_2) - FG1.get_x_m_from_x_s(this.pan_line_x_s_1);
+      this._P.p.y_m_centro -= FG1.get_y_m_from_y_s(this.pan_line_y_s_2) - FG1.get_y_m_from_y_s(this.pan_line_y_s_1);
       this.zoom_or_center_changed();
     }
   }
@@ -503,19 +493,19 @@ export class A implements OnInit, AfterViewInit {
 
   remover_selecoes() {
     //Removendo todas as selecoes...
-    for(let node of this.svg_nodes) {
+    for(let node of this._P.p.g.nodes) {
       node.set_select('selection_blue',false);
       node.set_select('selection_orange',false);
     }
 
     //Removendo todas as selecoes...
-    for(let node of this.svg_edges) {
+    for(let node of this._P.p.g.edges) {
       node.set_select('selection_blue',false);
       node.set_select('selection_orange',false);
     }
 
     //Removendo todas as selecoes...
-    for(let text of this.svg_texts) {
+    for(let text of this._P.p.svg_texts) {
       text.set_select('selection_blue',false);
     }
 
@@ -523,9 +513,6 @@ export class A implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-
-    this.problema_atual = new Problema();
-
 
     //Desligando o context menu dentro do svg: http://stackoverflow.com/questions/10864249/disabling-right-click-context-menu-on-a-html-canvas
     $('svg').bind('contextmenu', function(e){ return false; });
@@ -552,30 +539,30 @@ export class A implements OnInit, AfterViewInit {
       }, callback: (doit) => {
         if(doit) {
           //Removendo nodes
-          for(var i = this.svg_nodes.length; i--;){
-            if (this.svg_nodes[i].selected_blue) {
+          for(var i = this._P.p.g.nodes.length; i--;){
+            if (this._P.p.g.nodes[i].selected_blue) {
 
               //Removendo edges com esse node em nA ou nB...
-              for(var ii = this.svg_edges.length; ii--;){
-                if (this.svg_edges[ii].nA == this.svg_nodes[i] || this.svg_edges[ii].nB == this.svg_nodes[i] )
+              for(var ii = this._P.p.g.edges.length; ii--;){
+                if (this._P.p.g.edges[ii].nA == this._P.p.g.nodes[i] || this._P.p.g.edges[ii].nB == this._P.p.g.nodes[i] )
                 {
-                  this.svg_edges.splice(ii, 1);
+                  this._P.p.g.edges.splice(ii, 1);
                 }
 
               }
 
               //Removendo node da array
-              this.svg_nodes.splice(i, 1);
+              this._P.p.g.nodes.splice(i, 1);
             }
           }
           //Removendo textos
-          for(var i = this.svg_texts.length; i--;){
-            if (this.svg_texts[i].selected_blue) this.svg_texts.splice(i, 1);
+          for(var i = this._P.p.svg_texts.length; i--;){
+            if (this._P.p.svg_texts[i].selected_blue) this._P.p.svg_texts.splice(i, 1);
           }
           //Removendo edges
-          for(var i = this.svg_edges.length; i--;){
+          for(var i = this._P.p.g.edges.length; i--;){
               //Removendo node da array
-            if (this.svg_edges[i].selected_blue) this.svg_edges.splice(i, 1);
+            if (this._P.p.g.edges[i].selected_blue) this._P.p.g.edges.splice(i, 1);
           }
 
           A.a.recontar_selecao_count();
@@ -586,24 +573,24 @@ export class A implements OnInit, AfterViewInit {
 
   interconectar_nodes_sel_vermelho() {
 
-    for(var i = this.svg_nodes.length; i--;) {
+    for(var i = this._P.p.g.nodes.length; i--;) {
       //Checar todos os nodes selecionados de laranja
-      if(this.svg_nodes[i].selected_orange) {
+      if(this._P.p.g.nodes[i].selected_orange) {
         //Procurar agora outro node, selecionado de laranja, que nao seja esse
         for(var ii = i; ii--;) { //Pesquisar sem pesqusiar o que ja pesquisou antes!!! Essa é a tecnica! ;DD
           //Checar todos os nodes selecionados de laranja
-          if(this.svg_nodes[ii].selected_orange && this.svg_nodes[ii] != this.svg_nodes[i]) {
+          if(this._P.p.g.nodes[ii].selected_orange && this._P.p.g.nodes[ii] != this._P.p.g.nodes[i]) {
             //Pronto, vou verificar se existe algum edge entre esses nodes, se não, vou criar
             let achou_algum = false;
-            for(var edge of this.svg_edges) {
-              if((edge.nA == this.svg_nodes[i] && edge.nB == this.svg_nodes[ii]) || (edge.nB == this.svg_nodes[i] && edge.nA == this.svg_nodes[ii])) {
+            for(var edge of this._P.p.g.edges) {
+              if((edge.nA == this._P.p.g.nodes[i] && edge.nB == this._P.p.g.nodes[ii]) || (edge.nB == this._P.p.g.nodes[i] && edge.nA == this._P.p.g.nodes[ii])) {
                 achou_algum = true;
                 break;
               }
             }
             if(!achou_algum) {
               //Se nao achou nenhum, entao adicionar:
-              this.svg_edges.push(new Edge()._nA(this.svg_nodes[i])._nB(this.svg_nodes[ii]));
+              this._P.p.g.edges.push(new Edge()._nA(this._P.p.g.nodes[i])._nB(this._P.p.g.nodes[ii]));
             }
           }
         }
@@ -628,9 +615,9 @@ export class A implements OnInit, AfterViewInit {
     //let temp_teste_x = $('#root_svg').width();
     //let temp_teste_y = $('#root_svg').height();
     // for(var k = 0; k < 20; k++) {
-    //   this.svg_nodes.push(new Node()._x_m((Math.random()*temp_teste_x)-temp_teste_x/2)._y_m((Math.random()*temp_teste_y)-temp_teste_y/2));
-    //   this.svg_nodes.push(new Node()._x_m((Math.random()*temp_teste_x)-temp_teste_x/2)._y_m((Math.random()*temp_teste_y)-temp_teste_y/2));
-    //   this.svg_edges.push(new Edge()._nA(this.svg_nodes[2*k])._nB(this.svg_nodes[2*k+1]));
+    //   this._P.p.g.nodes.push(new Node()._x_m((Math.random()*temp_teste_x)-temp_teste_x/2)._y_m((Math.random()*temp_teste_y)-temp_teste_y/2));
+    //   this._P.p.g.nodes.push(new Node()._x_m((Math.random()*temp_teste_x)-temp_teste_x/2)._y_m((Math.random()*temp_teste_y)-temp_teste_y/2));
+    //   this._P.p.g.edges.push(new Edge()._nA(this._P.p.g.nodes[2*k])._nB(this._P.p.g.nodes[2*k+1]));
     // }
 
   }
@@ -641,7 +628,7 @@ export class A implements OnInit, AfterViewInit {
     var nodeB = null;
 
     //Procurando pelos dois nodes selecionados orange
-    for(let node of this.svg_nodes) {
+    for(let node of this._P.p.g.nodes) {
       if (node.selected_orange) {
         if(nodeA == null) nodeA = node;
         else {
@@ -651,7 +638,7 @@ export class A implements OnInit, AfterViewInit {
       }
     }
 
-    var caminho_otimo : Path = Solver_Dijkstra.find_best_route_Dijkstra(new Graph()._nodes(this.svg_nodes)._edges(this.svg_edges), nodeA, nodeB);
+    var caminho_otimo : Path = Solver_Dijkstra.find_best_route_Dijkstra(new Graph()._nodes(this._P.p.g.nodes)._edges(this._P.p.g.edges), nodeA, nodeB);
 
     this.remover_selecoes();
 
@@ -687,7 +674,7 @@ export class A implements OnInit, AfterViewInit {
         } else {
 
           //Antes de criar o novo mapa, encontrando qual melhor nivel de zoom do gMaps, baseado no zoom atual do grid do kLog
-          gMaps.procurar_zoom_inicial_mais_proximo(this.zoom_fator);
+          gMaps.procurar_zoom_inicial_mais_proximo(this._P.p.zoom_fator);
           //Se a api ja foi carregada, so criar novo mapa...
           gMaps.criar_novo_mapa();
           //Tambem forcar um recalculo do zoom:
@@ -701,6 +688,10 @@ export class A implements OnInit, AfterViewInit {
       this.gmaps_onoff = false;
     }
 
+  }
+
+  mudar_estilo_mapa(estilo : string) {
+    gMaps.gmap.setMapTypeId(estilo);
   }
 
 }

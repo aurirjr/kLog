@@ -24,7 +24,11 @@
   background: #babcb3;
   cursor: pointer;
 }
-
-.form-control {
-  -webkit-font-smoothing: subpixel-antialiased;
+.botoes_hrst {
+  padding: 0 2px;
+  width: 12px;
+}
+.botoes_hrst:hover {
+  background: #babcb3;
+  cursor: pointer;
 }

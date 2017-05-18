@@ -77,3 +77,18 @@ Basta clicar em qualquer ponto qualquer, arrastando-o para o novo local deste po
 
 Sem nenhuma tool, Mouse Right-Click funciona como atalho para remover seleções.
  
+# Google Maps
+
+  Pan e Zoom são integrados.
+  Google Maps tem 18 niveis de zoom.
+  
+  #Tipos de mapa definido no botao HRST
+    HYBRID	This map type displays a transparent layer of major streets on satellite images.
+    ROADMAP	This map type displays a normal street map.
+    SATELLITE	This map type displays satellite images.
+    TERRAIN	This map type displays maps with physical features such as terrain and vegetation.
+
+# Salvando na conta do Google
+
+  Agora cada usuario pode salvar, deletar ou abrir problemas, salvos com sua conta do google.
+  Alem disso, existe um conjunto de problemas publicos, que qualquer usuario logado tem acesso, e não pode salvar em cima.

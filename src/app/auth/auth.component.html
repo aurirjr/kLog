@@ -1,4 +1,5 @@
-<div style="display: flex; flex: 1; flex-direction: row-reverse; justify-content: center; z-index: 1">
+<div style="display: flex; flex: 1; flex-direction: row-reverse; justify-content: center; z-index: 1"
+     xmlns="http://www.w3.org/1999/html">
 
   <div style="position: absolute; vertical-align: middle; justify-self: center; align-self: center; background: white; padding: 5px 30px; border-radius: 4px;">
     <div class="spinner">
@@ -38,18 +39,53 @@
 
 </div>
 
-<!--Modal de controle do usuario-->
-<!--ORIENTACOES DAE-->
+<!--Modal de controle do usuario. Logoff, salvar problema, abrir problema...-->
 <div id="modal-auth" class="modal" tabindex="-1" role="dialog">
-  <!--EM CASO DE SUCESSO-->
-  <div class="modal-dialog modal-sm" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header" style="display: flex; justify-content: space-between;">
         <h5 class="modal-title">{{displayName}}</h5>
+        <div class="input-group input-group-sm" style="flex: 0.1; height: 30px; margin-right: 5px;">
+          <div class="input-group-addon">
+            Problema Atual:
+          </div>
+          <input type="text" class="input-group-addon" style="background: white" [(ngModel)]="_P.p.titulo">
+          <div class="input-group-addon botao_salvar" (click)="salvar_pro()">
+            Salvar
+          </div>
+        </div>
+        <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="logoff()">Log Off</button>
       </div>
       <div class="modal-body">
-        <div style="display: flex; justify-content: center; flex-direction: column">
-          <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="logoff()">SignOut</button>
+        <div style="display: flex; justify-content: center; flex-direction: column;">
+          <table>
+            <thead>
+            <tr>
+              <th style="border-bottom: 1px solid #444444">Problemas do Usuário</th>
+              <th style="border-bottom: 1px solid #444444"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let pro of Problemas_Users">
+              <td style="border-bottom: 1px dotted #cbcbcb"><i class="_ik _p-0-2 _clickGreen" style="font-style: normal; font-size: 14px; padding: 4px 5px;" (click)="abrir_pro(pro)">{{pro.titulo}}</i></td>
+              <td style="border-bottom: 1px dotted #cbcbcb"><i class="_ik _p-0-2 _clickRed" style="color: red;" (click)="deletar_pro(pro)"><i class="_ik _svg _bin_g16 _f16 _wh22 _vam _mt-3"></i></i></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display: flex; justify-content: center; flex-direction: column; margin-top: 12px;">
+          <table>
+            <thead>
+            <tr>
+              <th style="border-bottom: 1px solid #444444">Problemas Públicos</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let pro of Problemas_Users">
+              <td style="border-bottom: 1px dotted #cbcbcb"><i class="_ik _p-0-2 _clickGreen" style="font-style: normal; font-size: 14px; padding: 4px 5px;">{{pro.titulo}}</i></td>
+            </tr>
+            </tbody>
+          </table>
         </div>
       </div>
       <div class="modal-footer">
