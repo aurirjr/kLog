@@ -180,6 +180,8 @@ export class AuthComponent implements OnInit {
     //Ja que foi redefinido zoom e centros, recalcular tudo...
     A.a.zoom_or_center_changed();
 
+    this._CD.detectChanges();
+
   }
 
   salvar_pro() {
