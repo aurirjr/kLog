@@ -32,7 +32,7 @@ export class AuthComponent implements OnInit {
   //providerData;
   //--------------------------------------------
 
-  constructor(private _CD : ChangeDetectorRef, private _P : ProblemaService) {
+  constructor(private _CD : ChangeDetectorRef, public _P : ProblemaService) {
 
     this.status_logado = true;
 
