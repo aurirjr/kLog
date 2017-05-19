@@ -8,7 +8,7 @@ import { Accordion1Component } from './accordions/accordion1.component';
 import { Accordion2Component } from './accordions/accordion2.component';
 import { ToolComponent } from './tools/tool.component';
 import {InputDistanciaDirective, InputDistanciaPipe} from "./pipe_directives_services/input-distancia.pipe.directive";
-import { AuthComponent } from './auth/auth.component';
+import { AuthComponent } from './firebase/auth.component';
 import {ProblemaService} from "./Problema";
 
 @NgModule({

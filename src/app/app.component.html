@@ -63,25 +63,100 @@
     <!--COL 2-->
     <div style="flex: 1; display: flex; padding: 0; margin: 3px;">
 
-      <div id="prancheta" *ngIf="prancheta_onoff" style="margin: 0 10px 0 0; height: 100%; background:white; border: 1px solid gray; border-radius: 6px;"
-      [ngStyle]="{'width' : (hide_map) ? '100%' : '50%' }">
+      <div id="prancheta" *ngIf="prancheta_onoff" style="margin: 0 10px 0 0; height: 100%; background:white; border: 1px solid gray; border-radius: 6px; overflow-y: auto"
+      [ngStyle]="{'width' : (hide_map) ? '100%' : '60%' }">
         <div style="display: flex; flex-direction: column">
           <!--Prencheta ROW 1-->
           <div style="justify-content: space-between; display: flex;">
-            <div style="border-bottom: 1px dashed #868686; flex: 1;">
-              <span style="margin: 4px 0 0 5px; font-size: 14px; font-weight: bold; color: #4e4e4e">Vértices</span>
+            <div style="border-bottom: 1px dashed #868686; flex: 1; height: 30px; display: flex;">
+              <span style="margin: 5px 0 0 10px; font-size: 14px; font-weight: bold; color: #4e4e4e">
+                Vértices <i class="_ik _p-0-2 _clickGreen" style="color: green; font-weight: normal" (click)="adicionar_novo_node_centro()"><i class="_ik _svg _plus_g16 _f12 _wh16 _vam _mt-3"></i></i>
+              </span>
+            </div>
+            <div style="flex: 1; border-bottom: 1px dashed #868686; padding-top: 2px">
+              <i class="_ik _clickGreen" style="font-style: normal; font-size: 12px; border: 1px solid #9c9c9c; border-radius: 6px; padding: 0 4px; color: gray" (click)="mostrar_prancheta_config_modal()" >CONFIGURAR</i>
             </div>
             <div style="border-bottom: 1px dashed #868686;">
               <i class="_ik _p-0-2 _clickPurple" style="color: gray;" (click)="hide_map=!hide_map"><i class="_ik _svg _align_right_g10 _f20 _wh20 _vam _mt-3"></i></i>
             </div>
           </div>
           <!--Prencheta ROW 2-->
-          <div>...</div>
-          <!--Prencheta ROW 3-->
-          <div style="border-bottom: 1px dashed #868686; flex: 1;">
-            <span style="margin: 4px 0 0 5px; font-size: 14px; font-weight: bold; color: #4e4e4e">Arestas</span>
+          <div style="flex: 1; display: flex;">
+            <!--TABELA DE VERTICES-->
+            <table class="tabela_prancheta table table-bordered" style="flex: 1;">
+              <thead>
+                <tr>
+                  <th>X</th>
+                  <th>Y</th>
+                  <th>Nome</th>
+                  <th *ngIf="_P.p.pran_cfg_show_lat_lng">Lat</th>
+                  <th *ngIf="_P.p.pran_cfg_show_lat_lng">Lng</th>
+                  <th *ngIf="_P.p.pran_cfg_show_params_loc">Volume</th>
+                  <th *ngIf="_P.p.pran_cfg_show_params_loc">Taxa</th>
+                </tr>
+              </thead>
+              <tbody spellcheck="false">
+                <tr *ngFor="let node of _P.p.g.nodes">
+                  <td [ngStyle]="{'background' : (node.selected_blue) ? '#a0c0d8':(node.selected_orange) ? '#ffc4b1':'white'}">
+                    <div contenteditable="true" style="min-width: 20px" (input)="corrigir_edicao($event.target)" (keydown.enter)="atualizar_node_prancheta(node, $event.target, 0)"
+                         (blur)="atualizar_node_prancheta(node, $event.target, 0)" [textContent]="(node.dist_x.n+'').replace('.',',')+node.dist_x.und" (focus)="selectionar_editable()"></div>
+                  </td>
+                  <td [ngStyle]="{'background' : (node.selected_orange) ? '#ffc4b1':(node.selected_blue) ? '#a0c0d8':'white'}">
+                    <!--Com esse id, consigo facilmente identificar o elemento aqui na prancheta, e o node a que se refere...-->
+                    <!--EDIT: ContentEditable parece algo muito bacana e util, mas é um pouco bixado... Entao parei de utilizar-->
+                    <div contenteditable="true" style="min-width: 20px" (input)="corrigir_edicao($event.target)" (keydown.enter)="atualizar_node_prancheta(node, $event.target, 1)"
+                         (blur)="atualizar_node_prancheta(node, $event.target, 1)" [textContent]="(node.dist_y.n+'').replace('.',',')+node.dist_y.und" (focus)="selectionar_editable()"></div>
+                    <!--Tentei colocar o mesmo INPUT de distancia do zoom aqui, mas nao da legal pq o sistema muda o n_m das distancias, mas a referencia para o objeto Distancia nao muda...-->
+                    <!--Assim, nao dispara change detection! Ja com metodos que dao bind em dist_x.n_m, ai sim, dispara-->
+                    <!--<input contenteditable="true" style="min-width: 20px" [ngModel]="node.dist_y | input_distancia" [input-distancia]="node.dist_y" name="teste">-->
+                  </td>
+                  <td>
+                    <div contenteditable="true" style="min-width: 20px" (input)="corrigir_edicao($event.target)" (keydown.enter)="atualizar_node_prancheta(node, $event.target, 2)"
+                         (blur)="atualizar_node_prancheta(node, $event.target, 2)" [textContent]="node.nome" (focus)="selectionar_editable()"></div>
+                  </td>
+                  <td *ngIf="_P.p.pran_cfg_show_lat_lng" >{{node.info_Lat}}</td>
+                  <td *ngIf="_P.p.pran_cfg_show_lat_lng">{{node.info_Lng}}</td>
+                  <td *ngIf="_P.p.pran_cfg_show_params_loc" >
+                    <div contenteditable="true" style="min-width: 20px" (input)="corrigir_edicao($event.target)" (keydown.enter)="atualizar_node_prancheta(node, $event.target, 3)"
+                         (blur)="atualizar_node_prancheta(node, $event.target, 3)" [textContent]="(node.cog_vol+'').replace('.',',')" (focus)="selectionar_editable()"></div>
+                  </td>
+                  <td *ngIf="_P.p.pran_cfg_show_params_loc">
+                    <div contenteditable="true" style="min-width: 20px" (input)="corrigir_edicao($event.target)" (keydown.enter)="atualizar_node_prancheta(node, $event.target, 4)"
+                         (blur)="atualizar_node_prancheta(node, $event.target, 4)" [textContent]="(node.cog_rate+'').replace('.',',')" (focus)="selectionar_editable()"></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div>...</div>
+          <!--Prencheta ROW 3-->
+          <div style="border-bottom: 1px dashed #868686; flex: 1; height: 30px; display: flex;">
+            <span style="margin: 5px 0 0 10px; font-size: 14px; font-weight: bold; color: #4e4e4e">Arestas</span>
+          </div>
+          <div style="flex: 1; display: flex;">
+            <!--TABELA DE ARESTAS-->
+            <table class="tabela_prancheta table table-bordered" style="flex: 1;">
+              <thead>
+              <tr>
+                <th>De</th>
+                <th>Para</th>
+                <th>Custo</th>
+              </tr>
+              </thead>
+              <tbody spellcheck="false">
+              <tr *ngFor="let edge of _P.p.g.edges">
+                <td [ngStyle]="{'background' : (edge.selected_blue) ? '#a0c0d8':(edge.selected_orange) ? '#ffc4b1':'white'}">
+                  {{edge.nA.nome}}
+                </td>
+                <td [ngStyle]="{'background' : (edge.selected_orange) ? '#ffc4b1':(edge.selected_blue) ? '#a0c0d8':'white'}">
+                  {{edge.nB.nome}}
+                </td>
+                <td>
+                  --
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -151,11 +226,17 @@
           ...
           <app-accordion2 [titulo]='"Ações Rápidas"' [top]='"4px"'>
             <div style="display: flex; flex-direction: column; margin: 4px 0">
-              <div style="display: flex; justify-content: center; padding: 4px;" >
-                <button type="button" class="btn btn-outline-danger btn-sm" (click)="interconectar_nodes_sel_vermelho()"
-                [disabled]="!(selected_orange_count > 1)">
-                  <div style="border-radius: 50%; border: 1px solid #bf5632; background: #ffa07a; width: 12px; height: 12px; align-self: center; justify-self: center; display: inline-block; vertical-align: middle; margin: 0 3px 3px 0">
-                  </div>Interconectar</button>
+              <div style="display: flex; justify-content: center; padding: 4px; flex-direction: column" >
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="_AcRap.interconectar_nodes_sel_azul()" style="margin-bottom: 5px"
+                [disabled]="!(selected_blue_count > 1)">
+                  <div class="nodeball" style="background: #add8e6; margin-right: 5px;">2+</div><span style="vertical-align: middle; margin-top: -3px;">Conectar NxN</span>
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="_AcRap.conectar_nodes_sel_azul_com_laranja()"
+                        [disabled]="!(selected_orange_count == 1 && selected_blue_count >= 1 )">
+                  <div class="nodeball" style="background: #add8e6;">1+</div>
+                  <div class="nodeball" style="background: #ffa07a; margin-right: 5px;">1</div>
+                  <span style="vertical-align: middle; margin-top: -3px;">Conectar Nx1</span>
+                </button>
               </div>
             </div>
 
@@ -165,14 +246,50 @@
         </app-accordion1>
         <app-accordion1 [titulo]='"Arestas"'>...</app-accordion1>
         <app-accordion1 [titulo]='"Calcular"'>
-          <app-accordion2 [titulo]='"Localização"' [top]='"4px"'>...</app-accordion2>
+          <app-accordion2 [titulo]='"Localização"' [top]='"4px"'>
+            <div style="display: flex; flex-direction: column; margin: 4px 0; padding: 1px; align-items: flex-start; width: 174px; justify-content: center; align-items: center;"
+              ngForm #fff_loc="ngForm">
+              <!--SEM FORM-CONTROL TA FICANDO MAL ALINHADO... DPS VER PQ-->
+              <div class="input-group input-group-sm parametros_IG" style="box-sizing:border-box;">
+                <div class="input-group-addon">Power Factor</div>
+                <input class="input-group-addon form-control" type="text" style="background: white;" [(ngModel)]="_P.p.loc_power_factor" name="power_factor">
+              </div>
+              <div class="input-group input-group-sm parametros_IG" style="box-sizing:border-box;">
+                <div class="input-group-addon">Qtd Centros</div>
+                <input class="input-group-addon form-control" type="text" style="background: white;" [(ngModel)]="_P.p.loc_qtd_centros" name="qtd_centros">
+              </div>
+              <div class="input-group input-group-sm parametros_IG">
+                <div class="input-group-addon">Precisão</div>
+                <input class="input-group-addon form-control" type="text" style="background: white;" [(ngModel)]="_P.p.loc_precisao" name="precisao">
+              </div>
+              <div class="input-group input-group-sm parametros_IG">
+                <div class="input-group-addon">Usar</div>
+                <select class="input-group-addon form-control" type="text" style="background: white; height: 24px" [(ngModel)]="_P.p.loc_usar_alg_tipo" name="usar_alg">
+                  <option value="0">Um CG - Iteração</option>
+                  <option value="1">Multi CG - Clustering (Heurística)</option>
+                  <option value="2">Multi CG - Todas Combinações (Exato)</option>
+                  <option value="3">P-Mediana</option>
+                </select>
+              </div>
+              <button type="button" class="btn btn-outline-primary btn-sm" (click)="_AcRap.interconectar_nodes_sel_azul()" style="margin-bottom: 5px"
+                      [disabled]="!(selected_blue_count > 1) || fff_loc.invalid">
+                <div class="nodeball" style="background: #add8e6; margin-right: 5px;">2+</div><span style="vertical-align: middle; margin-top: -3px;">Cal CT Ótimo</span>
+              </button>
+              <button type="button" class="btn btn-outline-primary btn-sm" (click)="_AcRap.conectar_nodes_sel_azul_com_laranja()"
+                      [disabled]="!(selected_orange_count == 1 && selected_blue_count >= 1 ) || fff_loc.invalid">
+                <div class="nodeball" style="background: #add8e6;">1+</div>
+                <div class="nodeball" style="background: #ffa07a; margin-right: 5px;">1</div>
+                <span style="vertical-align: middle; margin-top: -3px;">Avaliar CT</span>
+              </button>
+            </div>
+          </app-accordion2>
           <app-accordion2 [titulo]='"Roteirização"' [bottom]='"4px"'>
             <div style="display: flex; flex-direction: column; margin: 4px 0">
               <div style="display: flex; justify-content: center; padding: 4px;" >
                 <button type="button" class="btn btn-outline-danger btn-sm" (click)="calcular_melhor_rota()"
                         [disabled]="!(selected_orange_count == 2)">
-                  <div style="border-radius: 50%; border: 1px solid #bf5632; background: #ffa07a; width: 12px; height: 12px; align-self: center; justify-self: center; display: inline-block; vertical-align: middle; margin: 0 3px 3px 0">
-                  </div>Melhor rota</button>
+                  <div class="nodeball" style="background: #ffa07a; margin-right: 5px;">2+</div><span style="vertical-align: middle; margin-top: -3px;">Melhor rota</span>
+                </button>
               </div>
             </div>
           </app-accordion2>
@@ -292,4 +409,35 @@
       </div>
     </div>
   </div>-->
+</div>
+
+<!--MODAL DE CONFIGURACAO DA PRANCHETA-->
+<div id="modal-prancheta-config" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="display: flex; justify-content: space-between;">
+        <h5 class="modal-title">Configurar tabelas de vértices/arestas</h5>
+      </div>
+      <div class="modal-body">
+
+        <!--Esses parametros sao guardados no problema para serem salvos junto com o problema-->
+        <div style="display: flex; flex-direction: column; margin-bottom: 20px;">
+          <div style="display: flex">
+            <div style="padding: 1px 4px 4px 4px"><input type="checkbox" [(ngModel)]="_P.p.pran_cfg_show_lat_lng"></div>
+            <div>Mostrar Lat/Lng</div>
+          </div>
+          <div style="display: flex">
+            <div style="padding: 1px 4px 4px 4px"><input type="checkbox" [(ngModel)]="_P.p.pran_cfg_show_params_loc"></div>
+            <div>Mostrar Parâmetros Localização</div>
+          </div>
+        </div>
+
+      <div class="modal-footer">
+        <div style="display: flex; justify-content: space-between; width: 100%">
+          <div></div>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

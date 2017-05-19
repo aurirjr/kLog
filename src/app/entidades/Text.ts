@@ -7,26 +7,26 @@ export class Text {
   //TEXTOS SE POSICIONAM DE FORMA MUITO SEMELHANTE A NODE!!
   public _x_m(x_m: number): Text
   {
-    this.x_m = x_m;
+    this.x_m = Math.floor(x_m); //A precisão é sempre de 1 metro!!
     this.x_s = FG1.get_x_s_from_x_m(x_m);
     return this;
   }
   public _y_m(y_m: number): Text
   {
-    this.y_m = y_m;
+    this.y_m = Math.floor(y_m); //A precisão é sempre de 1 metro!!
     this.y_s = FG1.get_y_s_from_y_m(y_m);
     return this;
   }
   public _x_s(x_s: number): Text
   {
     this.x_s = x_s;
-    this.x_m = FG1.get_x_m_from_x_s(x_s);
+    this.x_m = Math.floor(FG1.get_x_m_from_x_s(x_s)); //A precisão é sempre de 1 metro!!
     return this;
   }
   public _y_s(y_s: number): Text
   {
     this.y_s = y_s;
-    this.y_m = FG1.get_y_m_from_y_s(y_s);
+    this.y_m = Math.floor(FG1.get_y_m_from_y_s(y_s)); //A precisão é sempre de 1 metro!!
     return this;
   }
 

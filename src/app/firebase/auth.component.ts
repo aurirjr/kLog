@@ -231,6 +231,20 @@ export class AuthComponent implements OnInit {
     //console.log(p_in.zoom_fator);
     p_out.zoom_fator = p_in.zoom_fator;
 
+    //Tambem achei interessante salvar esse contador, afinal é bom pra performance nao ter que ficar procurando gaps pra dar o nome...
+    //Simplesmente continua a nomear os novos nodes em função desse contador...
+    p_out.n_counter = p_in.n_counter;
+
+    //Copiando parametros do problema de localização
+    p_out.loc_power_factor = p_in.loc_power_factor;
+    p_out.loc_qtd_centros = p_in.loc_qtd_centros;
+    p_out.loc_precisao = p_in.loc_precisao;
+    p_out.loc_usar_alg_tipo = p_in.loc_usar_alg_tipo;
+
+    //Salvando os parametros de configuração da prancheta:
+    p_out.pran_cfg_show_params_loc = p_in.pran_cfg_show_params_loc;
+    p_out.pran_cfg_show_lat_lng = p_in.pran_cfg_show_lat_lng;
+
     //Salvando, so pega as propriedades, abrindo, redefinindo a Distancia...
     if(s_a) p_out.zoom = Object.assign({},p_in.zoom);
     else p_out.zoom = Object.assign(new Distancia(),p_in.zoom);
@@ -268,12 +282,13 @@ export class AuthComponent implements OnInit {
         for(let node of p_in.g.nodes) {
           let new_node : any = {};
           //Copiando so o necessario
-          new_node['x_m'] = node.x_m;
-          new_node['y_m'] = node.y_m;
+          new_node['dist_x'] = { 'n': node.dist_x.n, 'und' : node.dist_x.und, 'n_m' : node.dist_x.n_m };
+          new_node['dist_y'] = { 'n': node.dist_y.n, 'und' : node.dist_y.und, 'n_m' : node.dist_y.n_m };
           new_node['x_s'] = node.x_s;
           new_node['y_s'] = node.y_s;
           new_node['cog_rate'] = node.cog_rate;
           new_node['cog_vol'] = node.cog_vol;
+          new_node['nome'] = node.nome;
           //Definindo um ID
           new_node['ID'] = node_id;
           //Colocando tambem no node original, pois sera necessario logo a frente...
@@ -287,7 +302,20 @@ export class AuthComponent implements OnInit {
       //Simplesmente trazer o objeto do FireBase não traz as funções, etc...
       if(p_in.g != null && p_in.g.nodes != null ) {
         for(let node of p_in.g.nodes) {
-          p_out.g.nodes.push(Object.assign(new Node(),node)); //Copiando propriedades de node para um objeto com as funcoes
+          //Copiando propriedades de node para um objeto com as funcoes
+          let new_node = new Node();
+          Object.assign(new_node,node);
+          // Ele coloca as informacoes de node.dist com Object.. e é pra ser Distancia...
+          // Usar extend tambem não acertou muito nao...
+          // console.log($.extend(true, new Node(), node));
+          //O jeito é criar denovo as distancias:
+          new_node.dist_x = new Distancia();
+          new_node.dist_y = new Distancia();
+          //Agora sim, pegando as informacoes...
+          Object.assign(new_node.dist_x,node.dist_x);
+          Object.assign(new_node.dist_y,node.dist_y);
+
+          p_out.g.nodes.push(new_node);
         }
       }
     }

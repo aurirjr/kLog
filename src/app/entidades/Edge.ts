@@ -100,4 +100,21 @@ export class Edge {
     else if(!this.selected_orange && !this.selected_blue) { this.color2 = 'transparent'; this.color3 = 'transparent'; }
   }
 
+  public static linkar_dois_nodes(na:Node, nb:Node) {
+    //Edit: Somente se o nodeA for diferente do nodeb, do contrario, pode-se adicionar um node ponto, de nK para nK
+    if(na != nb) {
+      //Edit: Tambem não adicionar um link se ja existe um link entre os mesmos nodes...
+      let pode_criar = true;
+      for(let edge of A.a._P.p.g.edges) {
+        if((edge.nA == na && edge.nB == nb) || (edge.nA == nb && edge.nB == na))
+        {
+          //Encontrando um edge que ja linka esses dois nodes, portanto, nao precisa criar esse
+          pode_criar = false;
+          break;
+        }
+      }
+      if(pode_criar) A.a._P.p.g.edges.push(new Edge()._nA(na)._nB(nb));
+    }
+  }
+
 }

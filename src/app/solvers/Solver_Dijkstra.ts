@@ -155,7 +155,7 @@ export class Solver_Dijkstra
           if (!nodes_Problema.includes(vizinho)) continue;
 
           //Somando a distancia do vizinho ao rotulo atual
-          var u_candidato = rotulos.get(atual).u + Math.pow(Math.pow(atual.x_m - vizinho.x_m, 2) + Math.pow(atual.y_m - vizinho.y_m, 2), 0.5);
+          var u_candidato = rotulos.get(atual).u + Math.pow(Math.pow(atual.dist_x.n_m- vizinho.dist_x.n_m, 2) + Math.pow(atual.dist_y.n_m - vizinho.dist_y.n_m, 2), 0.5);
 
           //O u sendo null é minha versao de infinito... se for, qualquer coisa é melhor..
           if (rotulos.get(vizinho).u == null || u_candidato < rotulos.get(vizinho).u)

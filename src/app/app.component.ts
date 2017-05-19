@@ -10,6 +10,7 @@ import {Solver_Dijkstra} from "./solvers/Solver_Dijkstra";
 import {Graph} from "./entidades/Graph";
 import {Path} from "app/entidades/Path";
 import {gMaps} from "./GoogleMaps";
+import {AcoesRapidas} from "app/funcoes_globais/AcoesRapidas";
 
 declare var $: any;
 declare var bootbox: any;
@@ -25,6 +26,9 @@ export class A implements OnInit, AfterViewInit {
 
   public static a: A; //Referencia global
   selected_tool: ToolComponent;
+
+  //Refeencia usada na GUI
+  _AcRap : AcoesRapidas = new AcoesRapidas();
 
   //Referencia estatic da classe Node para ser usada na GUI
   //_static_Node = Node; //Nao to usando...
@@ -112,7 +116,7 @@ export class A implements OnInit, AfterViewInit {
 
       //Como o zoom factor e considerado de la, então o zoom (Distancia) que aparece na tela vem desse zoomFactor
       //O que vai aparecer na tela terá uma imprecisão de varias casas decimais... Mas não tem problema, internamente o zoom factor ta correto...
-      this._P.p.zoom = new Distancia()._x_und(Math.floor(this._P.p.zoom_fator*83),'m')._und(this._P.p.zoom.und); //Define em metro, depois converte pra unidade que ja tava aparecendo antes...
+      this._P.p.zoom = new Distancia()._n_und(Math.floor(this._P.p.zoom_fator*83),'m')._und(this._P.p.zoom.und); //Define em metro, depois converte pra unidade que ja tava aparecendo antes...
 
       //Quando se usa gMaps, ao contrario do zoom, que é definido no Grid em função do gMaps... O centro é definido no Grid primeiro, e no gMaps em função do Grid...
       //O google carregou com uma latInicial e uma lngInicial, que correspondem a x_m_centro = 0 e y_m_centro = 0;
@@ -124,13 +128,12 @@ export class A implements OnInit, AfterViewInit {
       //Considerando zoom normal:
 
       //Recalculando o zoom factor...
-      this._P.p.zoom_fator = this._P.p.zoom.x_m / 83;
+      this._P.p.zoom_fator = this._P.p.zoom.n_m / 83;
     }
 
     //Se o zoom mudou, recalcular todos os x_s e y_s:
     for(let node of this._P.p.g.nodes) {
-      node._x_m(node.x_m); //Isso redfine o x_m, que nao mudou, mas nisso recalcula-se o x_s...
-      node._y_m(node.y_m);
+      node._x_y_m(node.dist_x.n_m,node.dist_y.n_m); //Isso redfine o x_m, que nao mudou, mas nisso recalcula-se o x_s...
     }
 
     for(let text of this._P.p.svg_texts) {
@@ -164,9 +167,9 @@ export class A implements OnInit, AfterViewInit {
       //Recalculando zoom normal:
       //EU RECRIO uma nova Distancia, para disparar o "zoom | input_distancia", pq nao quero usar pipes impuros, e colocar zoom.x_m nao da certo tb...
       if(up_down) {
-        this._P.p.zoom = new Distancia()._x_und(Math.round(this._P.p.zoom.x*(1+this.mouse_wheel_zoom_step) * 1000) / 1000,this._P.p.zoom.und); //Multiplicando pot 1+passo e arredodando pra 3 casas decimais
+        this._P.p.zoom = new Distancia()._n_und(Math.round(this._P.p.zoom.n*(1+this.mouse_wheel_zoom_step) * 1000) / 1000,this._P.p.zoom.und); //Multiplicando pot 1+passo e arredodando pra 3 casas decimais
       } else {
-        this._P.p.zoom = new Distancia()._x_und(Math.round(this._P.p.zoom.x*(1-this.mouse_wheel_zoom_step) * 1000) / 1000,this._P.p.zoom.und); //Mesma coisa, mas é 1 - o passo..
+        this._P.p.zoom = new Distancia()._n_und(Math.round(this._P.p.zoom.n*(1-this.mouse_wheel_zoom_step) * 1000) / 1000,this._P.p.zoom.und); //Mesma coisa, mas é 1 - o passo..
       }
     }
     this.zoom_or_center_changed();
@@ -234,8 +237,7 @@ export class A implements OnInit, AfterViewInit {
         //Se esta segurando o mouse e existe um draggabe_element
         if(e.which == 1 && this.draggable_element != null) {
           //Antigamente e.offsetX+8, mas depois passei a colocar o click de move no centro do cursor, dai nao precisa esse ajuste...
-          this.draggable_element._x_s(e.offsetX);
-          this.draggable_element._y_s(e.offsetY);
+          this.draggable_element._x_y_s(e.offsetX,e.offsetY);
         } else {
 
           this.draggable_element = null;
@@ -295,7 +297,7 @@ export class A implements OnInit, AfterViewInit {
           this.select_start_y = e.offsetY;
         } else if(this.selected_tool.nome_tool == 'add_node') {
           //Adicionando NODE
-          this._P.p.g.nodes.push(new Node()._x_s(e.offsetX)._y_s(e.offsetY));
+          this._P.p.g.nodes.push(this._P.p.set_random_name(new Node()._x_y_s(e.offsetX,e.offsetY)));
         }
         else if(this.selected_tool.nome_tool == 'move_hand') {
           //Usando a linha de pan pra move com ctrl!!
@@ -365,8 +367,7 @@ export class A implements OnInit, AfterViewInit {
               if(node.selected_blue) {
                 //Apenas movendo
                 //Mesma movimentação do PAN! So que sem mudar centro...
-                node._x_s(node.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1);
-                node._y_s(node.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
+                node._x_y_s(node.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1, node.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
               }
             }
             //Tambem mover os textos!
@@ -400,10 +401,10 @@ export class A implements OnInit, AfterViewInit {
                 //Se nao foi clonado, clonar
                 if(node_clonado_nA == null) {
                   node_clonado_nA = new Node()
-                    ._x_s(edge.nA.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1)
-                    ._y_s(edge.nA.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
+                    ._x_y_s(edge.nA.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1,
+                      edge.nA.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
                   nodes_e_clones.set(edge.nA,node_clonado_nA);
-                  this._P.p.g.nodes.push(node_clonado_nA);
+                  this._P.p.g.nodes.push(this._P.p.set_random_name(node_clonado_nA));
                 }
 
                 node_clonado_nB = nodes_e_clones.get(edge.nB);
@@ -411,10 +412,10 @@ export class A implements OnInit, AfterViewInit {
                 //Se nao foi clonado, clonar
                 if(node_clonado_nB == null) {
                   node_clonado_nB = new Node()
-                    ._x_s(edge.nB.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1)
-                    ._y_s(edge.nB.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
+                    ._x_y_s(edge.nB.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1,
+                      edge.nB.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
                   nodes_e_clones.set(edge.nB,node_clonado_nB);
-                  this._P.p.g.nodes.push(node_clonado_nB);
+                  this._P.p.g.nodes.push(this._P.p.set_random_name(node_clonado_nB));
                 }
 
                 //Adicionando o clone do edge:
@@ -431,9 +432,9 @@ export class A implements OnInit, AfterViewInit {
                 //Se nao foi copiado ainda, copiar
                 if(!nodes_ja_copiados.includes(node)) {
                   //Copiando os nodes...
-                  this._P.p.g.nodes.push(new Node()
-                    ._x_s(node.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1)
-                    ._y_s(node.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1));
+                  this._P.p.g.nodes.push(this._P.p.set_random_name(new Node()
+                    ._x_y_s(node.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1,
+                          node.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1)));
 
                   //Se um dia precisar utilizar nodes_e_clones mais a frente, entao tambem dar nodes_e_clones.set aqui...
                 }
@@ -581,33 +582,6 @@ export class A implements OnInit, AfterViewInit {
     });
   }
 
-  interconectar_nodes_sel_vermelho() {
-
-    for(var i = this._P.p.g.nodes.length; i--;) {
-      //Checar todos os nodes selecionados de laranja
-      if(this._P.p.g.nodes[i].selected_orange) {
-        //Procurar agora outro node, selecionado de laranja, que nao seja esse
-        for(var ii = i; ii--;) { //Pesquisar sem pesqusiar o que ja pesquisou antes!!! Essa é a tecnica! ;DD
-          //Checar todos os nodes selecionados de laranja
-          if(this._P.p.g.nodes[ii].selected_orange && this._P.p.g.nodes[ii] != this._P.p.g.nodes[i]) {
-            //Pronto, vou verificar se existe algum edge entre esses nodes, se não, vou criar
-            let achou_algum = false;
-            for(var edge of this._P.p.g.edges) {
-              if((edge.nA == this._P.p.g.nodes[i] && edge.nB == this._P.p.g.nodes[ii]) || (edge.nB == this._P.p.g.nodes[i] && edge.nA == this._P.p.g.nodes[ii])) {
-                achou_algum = true;
-                break;
-              }
-            }
-            if(!achou_algum) {
-              //Se nao achou nenhum, entao adicionar:
-              this._P.p.g.edges.push(new Edge()._nA(this._P.p.g.nodes[i])._nB(this._P.p.g.nodes[ii]));
-            }
-          }
-        }
-      }
-    }
-  }
-
   ngAfterViewInit(): void {
 
     //console.log($(this.root_svg));
@@ -704,8 +678,8 @@ export class A implements OnInit, AfterViewInit {
     gMaps.gmap.setMapTypeId(estilo);
   }
 
-  prancheta_onoff = false;
-  //prancheta_onoff = true; //TempDebug
+  //prancheta_onoff = false;
+  prancheta_onoff = true; //TempDebug
   hide_map = false;
 
   switch_prancheta_onoff() {
@@ -729,6 +703,93 @@ export class A implements OnInit, AfterViewInit {
       //Tem que resetar depois da prancheta aparecer, pra da tempo do ngIf mostra o elemento e os tamanhos mudarem...
       this.resetar_tamanhos_mapa();
     },0);
+  }
+
+  regex_distancia = /^\s*(-?\d+[,]?\d{0,3})\s*(m|km|yard)\s*$/;
+  regex_nome = /^.{0,20}$/;
+  atualizar_node_prancheta(node : Node, elem, tipo) {
+    //0 é atualizando o x
+    //1 é atualizando o y
+    //2 é atualizando o nome
+    //3 é atualizando o cg_vol
+    //4 é atualizando o cg_rate
+
+    if(tipo == 0 || tipo == 1) {
+
+      //Checando se o valor é aceito, se bater com o regex_zero e only_positive for true, entao retornar erro
+      if(this.regex_distancia.test(elem.textContent)) {
+        //Dando match, então vamos subtrarir unidade e numeral e resetar a distancia do node
+        let groups = this.regex_distancia.exec(elem.textContent);
+        if(groups != null) {
+          if(tipo==0) node.dist_x._n_und(parseFloat(groups[1].replace(',','.')),groups[2]);
+          if(tipo==1) node.dist_y._n_und(parseFloat(groups[1].replace(',','.')),groups[2]);
+          //Somente essa funcao recalcula os x_y_s pra poder dar refresh na tela
+          node._x_y_m(node.dist_x.n_m,node.dist_y.n_m);
+        }
+      }
+      else
+      {
+        //Se nao for, colocar o texto original de volta
+        if(tipo==0) $(elem).text(node.dist_x.n+node.dist_x.und);
+        if(tipo==1) $(elem).text(node.dist_y.n+node.dist_y.und);
+      }
+
+    }
+    //nome
+    else if (tipo == 2) {
+      //Nome tambem tem algumas regrinhas...
+      if(this.regex_nome.test(elem.textContent)) {
+        //Se deu match bacana, entao alterar o texto:
+        node.nome = elem.textContent;
+      }
+      else
+      {
+        //Se nao for, colocar o texto original de volta
+        $(elem).text(node.nome);
+      }
+    }
+    //cg_vol
+    else if (tipo == 3) {
+      //Aqui basta ser numero valido
+      let temp_number = parseFloat(elem.textContent.replace(',','.'));
+
+      if(isNaN(temp_number)) {
+        //Simplesmente reaplicar o valor atual
+        $(elem).text(node.cog_vol);
+      } else {
+        node.cog_vol = temp_number;
+      }
+    }
+    //cg_rate
+    else if (tipo == 4) {
+      //Aqui basta ser numero valido
+      let temp_number = parseFloat(elem.textContent.replace(',','.'));
+
+      if(isNaN(temp_number)) {
+        //Simplesmente reaplicar o valor atual
+        $(elem).text(node.cog_rate);
+      } else {
+        node.cog_rate = temp_number;
+      }
+    }
+  }
+
+  corrigir_edicao(x) {
+    //Se encontrar algum div dentro do contenteditable, colocar o textContent original
+    if(x.innerHTML.indexOf('<div>') >= 0) $(x).text(x.textContent);
+  }
+
+  //Com isso, ao dar focus em um editable, ele seleciona...
+  selectionar_editable() {
+    setTimeout(()=>{ document.execCommand('selectAll',false,null); },0);
+  }
+
+  adicionar_novo_node_centro() {
+    this._P.p.g.nodes.push(this._P.p.set_random_name(new Node()._x_y_m(0,0)));
+  }
+
+  mostrar_prancheta_config_modal(){
+    $('#modal-prancheta-config').modal('show');
   }
 
 }

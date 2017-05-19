@@ -72,15 +72,21 @@ export class gMaps {
   //computeOffset(from:LatLng, distance:number, heading:number, radius?:number) {
   //Return Value:  LatLng. Returns the LatLng resulting from moving a distance from an origin in the specified heading (expressed in degrees clockwise from north).
   public static recalcular_centro(x_m_c: number, y_m_c: number) {
-    this.gmap.setCenter(
+    this.gmap.setCenter(this.get_LatLng_from_x_m_y_m(x_m_c,y_m_c));
+  }
+  //Coloquei a funcao por fora tambem pois ela pode ser utilizada em outras situacoes...
+  public static get_LatLng_from_x_m_y_m(x_m: number, y_m: number):any {
+    //Retorna um google.maps.LatLng
+    return (
       new google.maps.LatLng(
         //Latitude. A partir de x_m 0 e y_m 0, que eram os latlng inicias... Somando a nova distancia vertical (y_m_c), para o norte ( 0 graus )
-        google.maps.geometry.spherical.computeOffset(this.LatLngInicial, y_m_c, 0).lat(), //Lat
+        google.maps.geometry.spherical.computeOffset(this.LatLngInicial, y_m, 0).lat(), //Lat
         //Longitude.A partir de x_m 0 e y_m 0, que eram os latlng inicias... Somando a nova distancia horizontal(x_m_c_, para o leste ( 90 graus )
-        google.maps.geometry.spherical.computeOffset(this.LatLngInicial, x_m_c, 90).lng() //Lng
+        google.maps.geometry.spherical.computeOffset(this.LatLngInicial, x_m, 90).lng() //Lng
       )
     );
   }
+
   public static resetar_tamanho_mapa() {
     //Com isso, altera o tamanho do mapa
     if(this.gmap!=null) {

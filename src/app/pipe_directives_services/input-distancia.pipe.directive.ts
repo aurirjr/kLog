@@ -12,11 +12,10 @@ import {Distancia} from "../entidades/Distancia";
 export class InputDistanciaPipe implements PipeTransform {
 
   transform(value : Distancia): string {
-    if(value==null || isNaN(value.x)) return null;
-    else return (''+value.x).replace('.',',')+value.und;
+    if(value==null || isNaN(value.n)) return null;
+    else return (''+value.n).replace('.',',')+value.und;
   }
 }
-
 @Directive({
   selector: '[ngModel][input-distancia]', //Tem que ter ngModel e input-distancia na mesma tag
   host: {
@@ -52,8 +51,8 @@ export class InputDistanciaDirective {
 
       temp_number = parseFloat(groups[1].replace(',','.'));
 
-      if(isNaN(temp_number)) this.dist.x = null;
-      else this.dist.x = temp_number;
+      if(isNaN(temp_number)) this.dist.n = null;
+      else this.dist.n = temp_number;
 
       this.dist.und = groups[2];
 

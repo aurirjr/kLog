@@ -2,6 +2,7 @@ import {Graph} from "./entidades/Graph";
 import {Text} from "./entidades/Text";
 import {Injectable} from "@angular/core";
 import {Distancia} from "./entidades/Distancia";
+import {Node} from "./entidades/Node";
 
 @Injectable()
 export class ProblemaService{
@@ -30,10 +31,28 @@ export class Problema{
   public svg_texts : Array<Text> = [];
 
   //Controle de zoom
-  public zoom : Distancia = new Distancia()._x_und(50,'km'); //Quantidade de metros em 83px de tela, que é o tamanho da linha verde embaixo do problema de zoom... Default é 100m / 83px
-  public zoom_fator : number = this.zoom.x_m / 83; //50Km em 83px - Foi esse valor que a escala do google medeu com zoom level 8, que é o zoom level inicial
+  public zoom : Distancia = new Distancia()._n_und(50,'km'); //Quantidade de metros em 83px de tela, que é o tamanho da linha verde embaixo do problema de zoom... Default é 100m / 83px
+  public zoom_fator : number = this.zoom.n_m / 83; //50Km em 83px - Foi esse valor que a escala do google medeu com zoom level 8, que é o zoom level inicial
 
   //Controlando que posicao do mapa logico, real, esta no centro da tela
   public x_m_centro = 0; public y_m_centro = 0; //Quando der PAN, alterar esses valores
+
+  //Todo novo problema vai usar isso como referencia para dar nomes aos nodes adicionados...
+  public n_counter=1;
+  public set_random_name(node : Node):Node {
+    node.nome = 'N'+this.n_counter;
+    this.n_counter++;
+    return node; //Builder Pattern
+  }
+
+  //COnfiguração da prancheta:
+  pran_cfg_show_lat_lng : boolean = true;
+  pran_cfg_show_params_loc : boolean = false;
+
+  //Problema de localização
+  loc_power_factor : number;
+  loc_qtd_centros : number;
+  loc_precisao : number;
+  loc_usar_alg_tipo : number;
 
 }

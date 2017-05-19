@@ -114,6 +114,10 @@ Quando não tiver certeza, ou não fizer muita diferença, entao deixa sem esse 
   min-width: 10px; min-height: 10px;
   -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M11 7v2h-8v2h8v2l3-3-3-3zM15 2.6v14.8c0 0.551 0.448 0.6 1 0.6 0.553 0 1-0.049 1-0.6v-14.8c0-0.553-0.447-0.6-1-0.6-0.552 0-1 0.047-1 0.6z'/></svg>");
 }
+._ik._svg._plus_g16 {
+  min-width: 14px; min-height: 14px;
+  -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'><path d='M27.125 10.5h-9.625v-9.625c0-0.483-0.392-0.875-0.875-0.875h-5.25c-0.483 0-0.875 0.392-0.875 0.875v9.625h-9.625c-0.483 0-0.875 0.392-0.875 0.875v5.25c0 0.483 0.392 0.875 0.875 0.875h9.625v9.625c0 0.483 0.392 0.875 0.875 0.875h5.25c0.483 0 0.875-0.392 0.875-0.875v-9.625h9.625c0.483 0 0.875-0.392 0.875-0.875v-5.25c0-0.483-0.392-0.875-0.875-0.875z'/></svg>");
+}
 
 
 

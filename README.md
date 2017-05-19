@@ -92,3 +92,8 @@ Sem nenhuma tool, Mouse Right-Click funciona como atalho para remover seleções
 
   Agora cada usuario pode salvar, deletar ou abrir problemas, salvos com sua conta do google.
   Alem disso, existe um conjunto de problemas publicos, que qualquer usuario logado tem acesso, e não pode salvar em cima.
+
+#Prancheta
+
+  A prancheta permite analisar, adicionar, editar, excluir... Todos os vertices e arestas...
+  Se um vertice estiver selecionado de azul, laranja ou azul/laranja, será indicado na prancheta

@@ -1,7 +1,6 @@
 .accordion_wrap {
   flex: 1;
   user-select: none;
-  cursor: pointer;
   width: 100%;
   margin: 4px 0 0 0;
   padding: 0 3px 3px 3px ;
@@ -20,6 +19,7 @@
   color: white;
   font-weight: 600;
   width: 100%;
+  cursor: pointer;
 }
 .accordion_content {
   flex: 1;
