@@ -678,8 +678,8 @@ export class A implements OnInit, AfterViewInit {
     gMaps.gmap.setMapTypeId(estilo);
   }
 
-  //prancheta_onoff = false;
-  prancheta_onoff = true; //TempDebug
+  prancheta_onoff = false;
+  //prancheta_onoff = true; //TempDebug
   hide_map = false;
 
   switch_prancheta_onoff() {
