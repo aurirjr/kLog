@@ -62,11 +62,11 @@
 ._ik._p-0-4 { padding: 0 4px; }
 ._ik._p-2-2 { padding: 2px 2px; }
 ._ik._p-4-4 { padding: 4px 4px; }
-._ik._clickOrange:hover { cursor: pointer; background: #f49100; border-radius: 4px; color: white !important;}
-._ik._clickRed:hover { cursor: pointer; background: orangered; border-radius: 4px; color: white !important;}
-._ik._clickGreen:hover { cursor: pointer; background: #57a857; border-radius: 4px; color: white !important;}
-._ik._clickPurple:hover { cursor: pointer; background: #7d3e80; border-radius: 4px; color: white !important;}
-._ik._clickBrown:hover { cursor: pointer; background: #c8771e; border-radius: 4px; color: white !important;}
+._ik._clickOrange:hover { cursor: pointer; background: #f49100 !important; border-radius: 4px; color: white !important;}
+._ik._clickRed:hover { cursor: pointer; background: orangered !important; border-radius: 4px; color: white !important;}
+._ik._clickGreen:hover { cursor: pointer; background: #57a857 !important; border-radius: 4px; color: white !important;}
+._ik._clickPurple:hover { cursor: pointer; background: #7d3e80 !important; border-radius: 4px; color: white !important;}
+._ik._clickBrown:hover { cursor: pointer; background: #c8771e !important; border-radius: 4px; color: white !important;}
 
 ._ik._selectedGreen { background: green; border-radius: 3px; color: white; }
 ._ik._lightgrayButton { background: lightgray; border-radius: 3px; user-select: none; }

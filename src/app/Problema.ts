@@ -50,9 +50,12 @@ export class Problema{
   pran_cfg_show_params_loc : boolean = false;
 
   //Problema de localização
-  loc_power_factor : number;
-  loc_qtd_centros : number;
-  loc_precisao : number;
-  loc_usar_alg_tipo : number;
+  loc_qtd_centros : number = 1; //Default é 1
+  loc_power_factor : number = 0.5; //ToDo: Ainda to decidindo se uso ou nao, por enquanto nao influi nada...
+  loc_precisao : number = 0.00001; //Default na iteraço
+  loc_usar_alg_tipo : number = 0; //Default é 0
+
+  //Salvando o texto de output no problema, pode ser bem util
+  output_text = "";
 
 }

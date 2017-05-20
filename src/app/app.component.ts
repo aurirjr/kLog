@@ -11,6 +11,7 @@ import {Graph} from "./entidades/Graph";
 import {Path} from "app/entidades/Path";
 import {gMaps} from "./GoogleMaps";
 import {AcoesRapidas} from "app/funcoes_globais/AcoesRapidas";
+import {Solver_Localizacao} from "./solvers/Solver_Localizacao";
 
 declare var $: any;
 declare var bootbox: any;
@@ -29,9 +30,13 @@ export class A implements OnInit, AfterViewInit {
 
   //Refeencia usada na GUI
   _AcRap : AcoesRapidas = new AcoesRapidas();
+  _SoLoc : Solver_Localizacao = new Solver_Localizacao();
+  _SoDij : Solver_Dijkstra = new Solver_Dijkstra();
 
   //Referencia estatic da classe Node para ser usada na GUI
   //_static_Node = Node; //Nao to usando...
+
+  public numberBrFormat = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 });
 
   //Como ainda nao da pra criar componentes dinamicamente, decidi utilizar mesmo varios ngFor dentro do svg, um pra cada tipo... edges, nodes, etc...
   //No futuro, quando o Angualr evoluir, posso criar componentes dinamicamente... Por enquanto vai de ngFor mesmo, torcendo pra não ter problema de performance...
@@ -137,8 +142,7 @@ export class A implements OnInit, AfterViewInit {
     }
 
     for(let text of this._P.p.svg_texts) {
-      text._x_m(text.x_m); //Isso redfine o x_m, que nao mudou, mas nisso recalcula-se o x_s...
-      text._y_m(text.y_m);
+      text._x_y_m(text.x_m,text.y_m); //Isso redfine o x_m, que nao mudou, mas nisso recalcula-se o x_s...
     }
   }
 
@@ -354,7 +358,7 @@ export class A implements OnInit, AfterViewInit {
         //Requisitar texto pelo bootbox
         bootbox.prompt("Inserir texto", (txt) => {
           //Quando o usuario colocar o texto, adicionar um objeto do tipo Texto
-          this._P.p.svg_texts.push(new Text()._x_s(e.offsetX)._y_s(e.offsetY+4)._text(txt)); //Pequeno ajuste pra posicionar melhor em relacao o clique...
+          this._P.p.svg_texts.push(new Text()._x_y_s(e.offsetX,e.offsetY+4)._text(txt)); //Pequeno ajuste pra posicionar melhor em relacao o clique...
         });
       }
       else if(this.selected_tool.nome_tool == 'move_hand' ) {
@@ -374,8 +378,7 @@ export class A implements OnInit, AfterViewInit {
             for(let text of this._P.p.svg_texts) {
               if(text.selected_blue) {
                 //Mesma movimentação do PAN! So que sem mudar centro...
-                text._x_s(text.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1);
-                text._y_s(text.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
+                text._x_y_s(text.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1,text.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1);
               }
             }
           }
@@ -447,8 +450,7 @@ export class A implements OnInit, AfterViewInit {
                 //Mesma movimentação do PAN! So que sem mudar centro...
                 this._P.p.svg_texts.push(
                   new Text()
-                    ._x_s(text.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1)
-                    ._y_s(text.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1)
+                    ._x_y_s(text.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1,text.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1)
                     ._text(text.text)
                 );
               }
@@ -604,38 +606,17 @@ export class A implements OnInit, AfterViewInit {
     //   this._P.p.g.edges.push(new Edge()._nA(this._P.p.g.nodes[2*k])._nB(this._P.p.g.nodes[2*k+1]));
     // }
 
+    //Ligando o output no inicio. Tem que ser por essa funcao, pra configurar o resizable...
+    if(!this.output_onoff) setTimeout(()=>{ this.switch_output_onoff(); this.output_line('Bem vindo(a)!'); },0);
+
   }
 
-  calcular_melhor_rota() {
 
-    var nodeA = null;
-    var nodeB = null;
 
-    //Procurando pelos dois nodes selecionados orange
-    for(let node of this._P.p.g.nodes) {
-      if (node.selected_orange) {
-        if(nodeA == null) nodeA = node;
-        else {
-          nodeB = node;
-          break;
-        }
-      }
-    }
+  calcular_ct_otimo() {
 
-    var caminho_otimo : Path = Solver_Dijkstra.find_best_route_Dijkstra(new Graph()._nodes(this._P.p.g.nodes)._edges(this._P.p.g.edges), nodeA, nodeB);
+    //Solver_Localizacao.get_node_CT(null,null,'sadasdsa');
 
-    this.remover_selecoes();
-
-    //Marcando os edges e nodes do caminho otimo!
-    for(let node of caminho_otimo.nodes) {
-      node.set_select('selection_orange', true);
-    }
-    for(let edge of caminho_otimo.edges) {
-      edge.set_select('selection_orange', true);
-    }
-
-    //Recontando selecionados
-    this.recontar_selecao_count();
 
   }
 
@@ -681,6 +662,7 @@ export class A implements OnInit, AfterViewInit {
   prancheta_onoff = false;
   //prancheta_onoff = true; //TempDebug
   hide_map = false;
+  output_onoff = false; // Output comeca nao aparecendo, as no AfterViwerInit eu ligo...
 
   switch_prancheta_onoff() {
 
@@ -701,6 +683,44 @@ export class A implements OnInit, AfterViewInit {
     //Sempre que mostrar ou esconder a prancheta, resetar o tamanho do mapa, ja que o svg mudou
     setTimeout(()=>{
       //Tem que resetar depois da prancheta aparecer, pra da tempo do ngIf mostra o elemento e os tamanhos mudarem...
+      this.resetar_tamanhos_mapa();
+    },0);
+  }
+
+  switch_output_onoff() {
+
+    this.output_onoff = !this.output_onoff;
+
+    if(this.output_onoff) {
+      //Configurando o resize no output, depois do ngIf claro:
+      setTimeout(()=>{
+
+        /*$('#output_cont').keydown(function(e) {
+          // trap the return key being pressed
+          if (e.keyCode === 13) {
+            // insert 2 br tags (if only one br tag is inserted the cursor won't go to the next line)
+            document.execCommand('insertHTML', true, '\n');
+            // prevent the default behaviour of return key pressed
+            return false;
+          }
+        });*/
+
+
+        $('#output').resizable({
+          handles: 'n',
+          resize: (e,ui) => {
+            //Esse pequeno hack foi necessario para o resize aumentar so o hetight e nao alterar o top
+            ui.position.top = 0;
+            //Resetando centro do mapa, como na prancheta:
+            this.resetar_tamanhos_mapa();
+          }
+        });
+      },0);
+    }
+
+    //Sempre que mostrar ou esconder o output, resetar o tamanho do mapa, ja que o svg muda
+    setTimeout(()=>{
+      //Tem que resetar depois do output aparecer, pra da tempo do ngIf mostra o elemento e os tamanhos mudarem...
       this.resetar_tamanhos_mapa();
     },0);
   }
@@ -792,4 +812,24 @@ export class A implements OnInit, AfterViewInit {
     $('#modal-prancheta-config').modal('show');
   }
 
+  output_line(line : string) {
+    if(this._P.p.output_text.length > 0) this._P.p.output_text += '\n' + line;
+    else this._P.p.output_text += line;
+
+    //Dando scroll pro final do output. Acontece dentro de um timeout, pq precisa dar tempo do tamanho do textarea mudar apos o texto ser alterado aqui...
+    setTimeout(()=> { let textarea = document.getElementById('output_TA'); if(textarea) textarea.scrollTop = textarea.scrollHeight + 100; },0);
+  }
+
+  /* contenteditable NAO DEU LEGAL, pq no PAN ficava selecionando o texto...
+  contenteditable_output_input(x) {
+
+    //Tentando fazer um text editor decente usando contenteditable e não textarea...
+
+    //console.log(x.innerHTML+'');
+    //console.log(x.innerHTML.replace(/<div>/g,'\n').replace(/<\/div>/g,'').replace(/<br>/g,'').replace(/&.*;/g,''));
+    this._P.p.output_text = x.innerHTML.replace(/<div>/g,'\n').replace(/<\/div>/g,'').replace(/<br>/g,'').replace(/&.*;/g,'');
+  }*/
+
 }
+
+

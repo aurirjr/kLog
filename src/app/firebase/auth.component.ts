@@ -241,6 +241,9 @@ export class AuthComponent implements OnInit {
     p_out.loc_precisao = p_in.loc_precisao;
     p_out.loc_usar_alg_tipo = p_in.loc_usar_alg_tipo;
 
+    //Salvando o outpur
+    p_out.output_text = p_in.output_text;
+
     //Salvando os parametros de configuração da prancheta:
     p_out.pran_cfg_show_params_loc = p_in.pran_cfg_show_params_loc;
     p_out.pran_cfg_show_lat_lng = p_in.pran_cfg_show_lat_lng;

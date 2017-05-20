@@ -97,3 +97,8 @@ Sem nenhuma tool, Mouse Right-Click funciona como atalho para remover seleções
 
   A prancheta permite analisar, adicionar, editar, excluir... Todos os vertices e arestas...
   Se um vertice estiver selecionado de azul, laranja ou azul/laranja, será indicado na prancheta
+
+#Output
+
+  Pode ser ligado e desligado com botao inferior esquerdo.
+  Expoe varias informações, principalmente de solvers.
