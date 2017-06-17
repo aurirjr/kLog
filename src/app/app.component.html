@@ -95,6 +95,7 @@
                   <th *ngIf="_P.p.pran_cfg_show_lat_lng">Lng</th>
                   <th *ngIf="_P.p.pran_cfg_show_params_loc">Volume</th>
                   <th *ngIf="_P.p.pran_cfg_show_params_loc">Taxa</th>
+                  <th *ngIf="_P.p.pran_cfg_show_params_pro_tranp">(PT) Qtd</th>
                 </tr>
                 </thead>
                 <tbody spellcheck="false">
@@ -126,6 +127,7 @@
                     <div contenteditable="true" style="min-width: 20px" (input)="corrigir_edicao($event.target)" (keydown.enter)="atualizar_node_prancheta(node, $event.target, 4)"
                          (blur)="atualizar_node_prancheta(node, $event.target, 4)" [textContent]="(node.cog_rate+'').replace('.',',')" (focus)="selectionar_editable()"></div>
                   </td>
+                  <td *ngIf="_P.p.pran_cfg_show_params_pro_tranp">0</td>
                 </tr>
                 </tbody>
               </table>
@@ -141,7 +143,9 @@
                 <tr>
                   <th>De</th>
                   <th>Para</th>
-                  <th>Custo</th>
+                  <th *ngIf="_P.p.pran_cfg_show_params_pro_tranp">$/und/dis</th>
+                  <th *ngIf="_P.p.pran_cfg_show_params_pro_tranp">$/und</th>
+                  <th *ngIf="_P.p.pran_cfg_show_params_pro_tranp">Qtd Otima</th>
                 </tr>
                 </thead>
                 <tbody spellcheck="false">
@@ -152,8 +156,14 @@
                   <td [ngStyle]="{'background' : (edge.selected_orange) ? '#ffc4b1':(edge.selected_blue) ? '#a0c0d8':'white'}">
                     {{edge.nB.nome}}
                   </td>
-                  <td>
-                    --
+                  <td *ngIf="_P.p.pran_cfg_show_params_pro_tranp">
+                    0
+                  </td>
+                  <td *ngIf="_P.p.pran_cfg_show_params_pro_tranp">
+                    0
+                  </td>
+                  <td *ngIf="_P.p.pran_cfg_show_params_pro_tranp">
+                    0
                   </td>
                 </tr>
                 </tbody>
@@ -298,10 +308,16 @@
           </app-accordion2>
           <app-accordion2 [titulo]='"Roteirização"' [bottom]='"4px"'>
             <div style="display: flex; flex-direction: column; margin: 4px 0">
-              <div style="display: flex; justify-content: center; padding: 4px;" >
+              <div style="display: flex; justify-content: center; padding: 4px; flex-direction: column" >
                 <button type="button" class="btn btn-outline-danger btn-sm" (click)="_SoDij.GUI_calcular_melhor_rota()"
-                        [disabled]="!(selected_orange_count == 2)">
+                        [disabled]="!(selected_orange_count == 2)" style="margin-bottom: 4px;">
                   <div class="nodeball" style="background: #ffa07a; margin-right: 5px;">2+</div><span style="vertical-align: middle; margin-top: -3px;">Melhor rota</span>
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm"
+                        [disabled]="!(selected_orange_count >= 1 && selected_blue_count >= 1 )">
+                  <div class="nodeball" style="background: #add8e6;">2+</div>
+                  <div class="nodeball" style="background: #ffa07a; margin-right: 5px;">2+</div>
+                  <span style="vertical-align: middle; margin-top: -3px;">Pro. Transp.</span>
                 </button>
               </div>
             </div>
@@ -444,7 +460,11 @@
           </div>
           <div style="display: flex">
             <div style="padding: 1px 4px 4px 4px"><input type="checkbox" [(ngModel)]="_P.p.pran_cfg_show_params_loc"></div>
-            <div>Mostrar Parâmetros Localização</div>
+            <div>Mostrar Parâmetros Localização - COG</div>
+          </div>
+          <div style="display: flex">
+            <div style="padding: 1px 4px 4px 4px"><input type="checkbox" [(ngModel)]="_P.p.pran_cfg_show_params_pro_tranp"></div>
+            <div>Mostrar Parâmetros Problema Transporte</div>
           </div>
         </div>
 
