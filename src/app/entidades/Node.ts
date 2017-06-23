@@ -80,6 +80,11 @@ export class Node {
   public cg_vol : number;
   public cg_taxa : number;
 
+  //----- PARAMS DE PROBLEMA TRANSPORT:
+
+  //Quantidade ofertada ou demandada
+  public pt_qtde_ofert_demand : number = 0; //Default como 0
+
   //----------------------------------- GUI
 
   public x_s : number; //Posicao em px, na tela

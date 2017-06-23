@@ -32,6 +32,13 @@ export class Edge {
   public color2 = "transparent";
   public color3 = "transparent";
 
+  //----- PARAMS DE PROBLEMA TRANSPORT:
+
+  //Quantidade ofertada ou demandada
+  public pt_qtd_otima_calculada : number;
+  public pt_custo_unit : number = 0; //Default como 0;
+  public pt_custo_unit_metro : number = 0; //Default como 0;
+
   public mouse_over(e, is_over : boolean) {
 
     //Masas isso, muda o cursor do node se desejar, usando jQuery...

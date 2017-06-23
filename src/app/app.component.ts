@@ -7,11 +7,10 @@ import {Text} from "./entidades/Text";
 import {Distancia} from "./entidades/Distancia";
 import {FG1} from "app/funcoes_globais/FuncoesGlobais1";
 import {Solver_Dijkstra} from "./solvers/Solver_Dijkstra";
-import {Graph} from "./entidades/Graph";
-import {Path} from "app/entidades/Path";
 import {gMaps} from "./GoogleMaps";
 import {AcoesRapidas} from "app/funcoes_globais/AcoesRapidas";
-import {Solver_Localizacao} from "./solvers/Solver_Localizacao";
+import {Solver_Localizacao} from "./solvers/Solver_Localizacao_COG";
+import {Solver_PT} from "./solvers/Solver_PT";
 
 declare var $: any;
 declare var bootbox: any;
@@ -32,6 +31,7 @@ export class A implements OnInit, AfterViewInit {
   _AcRap : AcoesRapidas = new AcoesRapidas();
   _SoLoc : Solver_Localizacao = new Solver_Localizacao();
   _SoDij : Solver_Dijkstra = new Solver_Dijkstra();
+  _SoPT : Solver_PT = new Solver_PT();
 
   //Referencia estatic da classe Node para ser usada na GUI
   //_static_Node = Node; //Nao to usando...
@@ -437,7 +437,7 @@ export class A implements OnInit, AfterViewInit {
                   //Copiando os nodes...
                   this._P.p.g.nodes.push(this._P.p.set_random_name(new Node()
                     ._x_y_s(node.x_s + this.pan_line_x_s_2 - this.pan_line_x_s_1,
-                          node.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1)));
+                      node.y_s + this.pan_line_y_s_2 - this.pan_line_y_s_1)));
 
                   //Se um dia precisar utilizar nodes_e_clones mais a frente, entao tambem dar nodes_e_clones.set aqui...
                 }
@@ -526,10 +526,10 @@ export class A implements OnInit, AfterViewInit {
     //Portanto, alterações por jquerui resizable, ou por aparecer prancheta ou similares... Todas elas devem disparar essa função...
 
     /*OLD
-    //O evento refere-se a window... Então, pegar novamente os tamanhos com jQuery...
-    this.x_s_middle_center = $('#root_svg').width()/2;
-    this.y_s_middle_center = $('#root_svg').height()/2;
-    */
+     //O evento refere-se a window... Então, pegar novamente os tamanhos com jQuery...
+     this.x_s_middle_center = $('#root_svg').width()/2;
+     this.y_s_middle_center = $('#root_svg').height()/2;
+     */
 
     //NEW:
     this.x_s_middle_center = this.wrapper.nativeElement.offsetWidth/2;
@@ -574,7 +574,7 @@ export class A implements OnInit, AfterViewInit {
           }
           //Removendo edges
           for(var i = this._P.p.g.edges.length; i--;){
-              //Removendo node da array
+            //Removendo node da array
             if (this._P.p.g.edges[i].selected_blue) this._P.p.g.edges.splice(i, 1);
           }
 
@@ -593,8 +593,8 @@ export class A implements OnInit, AfterViewInit {
     // $(this.root_svg).append('<svg:line x1="0" y1="0" x2="220" y2="11" style="stroke:rgb(255,0,0);stroke-width:2" />');
 
     /*var circle = d3.select('root_svg').append("circle")
-      .attr("r", "10")
-      .attr("style", "fill:white;stroke:black;stroke-width:5");*/
+     .attr("r", "10")
+     .attr("style", "fill:white;stroke:black;stroke-width:5");*/
 
     this.resetar_tamanhos_mapa();
 
@@ -696,14 +696,14 @@ export class A implements OnInit, AfterViewInit {
       setTimeout(()=>{
 
         /*$('#output_cont').keydown(function(e) {
-          // trap the return key being pressed
-          if (e.keyCode === 13) {
-            // insert 2 br tags (if only one br tag is inserted the cursor won't go to the next line)
-            document.execCommand('insertHTML', true, '\n');
-            // prevent the default behaviour of return key pressed
-            return false;
-          }
-        });*/
+         // trap the return key being pressed
+         if (e.keyCode === 13) {
+         // insert 2 br tags (if only one br tag is inserted the cursor won't go to the next line)
+         document.execCommand('insertHTML', true, '\n');
+         // prevent the default behaviour of return key pressed
+         return false;
+         }
+         });*/
 
 
         $('#output').resizable({
@@ -733,6 +733,10 @@ export class A implements OnInit, AfterViewInit {
     //2 é atualizando o nome
     //3 é atualizando o cg_vol
     //4 é atualizando o cg_rate
+    //5 é atualizando o pt_qtde_ofert_demand
+
+    //DEBUG
+    //console.log(node);
 
     if(tipo == 0 || tipo == 1) {
 
@@ -792,6 +796,44 @@ export class A implements OnInit, AfterViewInit {
         node.cog_rate = temp_number;
       }
     }
+    else if (tipo == 5) {
+      //Aqui basta ser numero valido
+      let temp_number = parseFloat(elem.textContent.replace(',','.'));
+
+      if(isNaN(temp_number)) {
+        //Simplesmente reaplicar o valor atual
+        $(elem).text(node.pt_qtde_ofert_demand);
+      } else {
+        node.pt_qtde_ofert_demand = temp_number;
+      }
+    }
+  }
+
+  atualizar_edge_prancheta(edge : Edge, elem, tipo) {
+    //0 é atualizando o pt_unit_metro
+    //1 é atualizando o pt_unit
+
+    if (tipo == 0) {
+      //Aqui basta ser numero valido
+      let temp_number = parseFloat(elem.textContent.replace(',','.'));
+
+      if(isNaN(temp_number)) {
+        //Simplesmente reaplicar o valor atual
+        $(elem).text(edge.pt_custo_unit_metro);
+      } else {
+        edge.pt_custo_unit_metro = temp_number;
+      }
+    } else if (tipo == 1) {
+      //Aqui basta ser numero valido
+      let temp_number = parseFloat(elem.textContent.replace(',','.'));
+
+      if(isNaN(temp_number)) {
+        //Simplesmente reaplicar o valor atual
+        $(elem).text(edge.pt_custo_unit);
+      } else {
+        edge.pt_custo_unit = temp_number;
+      }
+    }
   }
 
   corrigir_edicao(x) {
@@ -821,14 +863,14 @@ export class A implements OnInit, AfterViewInit {
   }
 
   /* contenteditable NAO DEU LEGAL, pq no PAN ficava selecionando o texto...
-  contenteditable_output_input(x) {
+   contenteditable_output_input(x) {
 
-    //Tentando fazer um text editor decente usando contenteditable e não textarea...
+   //Tentando fazer um text editor decente usando contenteditable e não textarea...
 
-    //console.log(x.innerHTML+'');
-    //console.log(x.innerHTML.replace(/<div>/g,'\n').replace(/<\/div>/g,'').replace(/<br>/g,'').replace(/&.*;/g,''));
-    this._P.p.output_text = x.innerHTML.replace(/<div>/g,'\n').replace(/<\/div>/g,'').replace(/<br>/g,'').replace(/&.*;/g,'');
-  }*/
+   //console.log(x.innerHTML+'');
+   //console.log(x.innerHTML.replace(/<div>/g,'\n').replace(/<\/div>/g,'').replace(/<br>/g,'').replace(/&.*;/g,''));
+   this._P.p.output_text = x.innerHTML.replace(/<div>/g,'\n').replace(/<\/div>/g,'').replace(/<br>/g,'').replace(/&.*;/g,'');
+   }*/
 
 }
 

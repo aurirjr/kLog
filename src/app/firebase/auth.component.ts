@@ -247,6 +247,7 @@ export class AuthComponent implements OnInit {
     //Salvando os parametros de configuração da prancheta:
     p_out.pran_cfg_show_params_loc = p_in.pran_cfg_show_params_loc;
     p_out.pran_cfg_show_lat_lng = p_in.pran_cfg_show_lat_lng;
+    p_out.pran_cfg_show_params_pro_tranp = p_in.pran_cfg_show_params_pro_tranp;
 
     //Salvando, so pega as propriedades, abrindo, redefinindo a Distancia...
     if(s_a) p_out.zoom = Object.assign({},p_in.zoom);
@@ -289,9 +290,13 @@ export class AuthComponent implements OnInit {
           new_node['dist_y'] = { 'n': node.dist_y.n, 'und' : node.dist_y.und, 'n_m' : node.dist_y.n_m };
           new_node['x_s'] = node.x_s;
           new_node['y_s'] = node.y_s;
+          new_node['nome'] = node.nome;
+          //Problemas cog:
           new_node['cog_rate'] = node.cog_rate;
           new_node['cog_vol'] = node.cog_vol;
-          new_node['nome'] = node.nome;
+          //Problemas PT:
+          new_node['pt_qtde_ofert_demand'] = node.pt_qtde_ofert_demand;
+
           //Definindo um ID
           new_node['ID'] = node_id;
           //Colocando tambem no node original, pois sera necessario logo a frente...
@@ -333,6 +338,12 @@ export class AuthComponent implements OnInit {
           //Alocando IDs dos nodes associados...
           new_edge['na_ID'] = edge.nA['ID'];
           new_edge['nb_ID'] = edge.nB['ID'];
+          //Problemas PT:
+          //Nao precisa salvar, e calculada...
+          //new_edge['pt_qtd_otima_calculada'] = edge.pt_qtd_otima_calculada;
+          new_edge['pt_custo_unit'] = edge.pt_custo_unit;
+          new_edge['pt_custo_unit_metro'] = edge.pt_custo_unit_metro;
+
           p_out.g.edges.push(new_edge);
         }
       }
