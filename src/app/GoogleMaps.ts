@@ -5,6 +5,14 @@ import {EventEmitter} from "@angular/core";
 
 declare var google: any;
 
+
+/* REFORMULACAO JUNHO / 2017 NAO DEU TEMPO TERMINAR!!! AGR SO PRA FUTUROS DESENVOLVEDORES
+*  // Radius of the planet for the map, in meters. Optional; defaults to Earth's equatorial radius of 6378137 meters.
+*  // Ao executar: this.fromLatLng_ToMercatorPoint(new google.maps.LatLng(1,1));
+*  128.7111111111111 127.28885278333395
+* */
+
+
 //Adicionando GoogleMapsAPI:
   //APIKEY: AIzaSyAI7zmXJ7GUAer9gQ7bL8S95qVZxIItJvs
 
@@ -20,8 +28,8 @@ const url = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAI7zmXJ7GUAer9gQ7
 export class gMaps {
   public static _mapsApi; //Aqui guardo a api, carregada no componente, com GoogleMapsLoader.load...
   public static gmap; //Aqui guardo o mapa criado pela Api
-  public static latInicial = -3.79;
-  public static lngInicial = -38.50;
+  public static latInicial = -3.79; //-3.79 Fortaleza
+  public static lngInicial = -38.50; //-38.50 Fortaleza
   public static LatLngInicial;
   //Nessa latitude inicial, e nesse zoom_inicial, a funcao abaixo retorna: 610.1588962773312 m/px
   //Assim, é bom eu definir uma escala inicial proxima disso, 610 metros por pixel... No excel, deu algo como 50,643Km/83pixel
@@ -73,6 +81,13 @@ export class gMaps {
   //Return Value:  LatLng. Returns the LatLng resulting from moving a distance from an origin in the specified heading (expressed in degrees clockwise from north).
   public static recalcular_centro(x_m_c: number, y_m_c: number) {
     this.gmap.setCenter(this.get_LatLng_from_x_m_y_m(x_m_c,y_m_c));
+
+    //TESTES JUNHO 2017
+    //this.fromLatLng_ToMercatorPoint(new google.maps.LatLng(120,60));
+    //console.log('XMC ' + x_m_c + " YMC " +y_m_c);
+    //console.log(this.get_LatLng_from_x_m_y_m(x_m_c,y_m_c))
+    //console.log(this.fromLatLng_ToMercatorPoint(this.get_LatLng_from_x_m_y_m(x_m_c,y_m_c)))
+    //console.log(this.fromMercatorPoint_ToLatLng(100.62,130.69))
   }
   //Coloquei a funcao por fora tambem pois ela pode ser utilizada em outras situacoes...
   public static get_LatLng_from_x_m_y_m(x_m: number, y_m: number):any {
@@ -86,6 +101,40 @@ export class gMaps {
       )
     );
   }
+
+  //CORRECOES/TESTES JUNHO / 2017  $$$$$$$$$$$$$$$$$$$$$$
+  /* Coordenadas mundiais
+   * https://developers.google.com/maps/documentation/javascript/maptypes?hl=pt-br
+   * Mercator projection: https://en.wikipedia.org/wiki/Mercator_projection
+   * */
+
+  // The mapping between latitude, longitude and pixels is defined by the web mercator projection.
+  //https://stackoverflow.com/a/23463262/1527542
+  public static fromLatLng_ToMercatorPoint(latLng) {
+    var siny = Math.sin(latLng.lat() * Math.PI / 180);
+
+    // Truncating to 0.9999 effectively limits latitude to 89.189. This is
+    // about a third of a tile past the edge of the world tile.
+    siny = Math.min(Math.max(siny, -0.9999), 0.9999);
+
+    console.log('X: '+ (256 * (0.5 + latLng.lng() / 360)));
+    console.log('Y: ' + (256 * (0.5 - Math.log((1 + siny) / (1 - siny)) / (4 * Math.PI))));
+    //return new google.maps.Point(, );
+  }
+  public static fromMercatorPoint_ToLatLng(X,Y) {
+
+    var latlng = new google.maps.LatLng(
+      (2 * Math.atan(Math.exp((Y - 128) / -(256 / (2 * Math.PI)))) -
+      Math.PI / 2)/ (Math.PI / 180), //Lat
+      (X - 128) / (256 / 360) //Lng
+    );
+
+    console.log(latlng.lat());
+    console.log(latlng.lng());
+
+    return latlng;
+  }
+  // $$$$$$$$$$$$$$$$$$$$$$
 
   public static resetar_tamanho_mapa() {
     //Com isso, altera o tamanho do mapa
@@ -128,6 +177,7 @@ export class GoogleMapsLoader {
     // Always return promise. When 'load' is called many times, the promise is already resolved.
     return GoogleMapsLoader.promise;
   }
+
 }
 
 //TERRA REDONDA: Por um breve momento, pensei que Grid e gMaps teriam uma correlação entre os posicionamentos, que é justamente o problema MILES do Logware...
@@ -135,4 +185,6 @@ export class GoogleMapsLoader {
 //Mas depois percebi que o gMap é flat, é linear ja... Os pontos, as distancias....
 //Boa leitura sobre isso: https://www.quora.com/How-does-Google-Maps-calculate-the-distance-from-one-place-to-another
 //Provavelmente o google inplemtna o Haversine, mas tambem tem um codigo em JS nessa pagina ai...
+
+
 

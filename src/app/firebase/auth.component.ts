@@ -246,7 +246,9 @@ export class AuthComponent implements OnInit {
 
     //Salvando os parametros de configuração da prancheta:
     p_out.pran_cfg_show_params_loc = p_in.pran_cfg_show_params_loc;
+    p_out.pran_cfg_show_params_loc_pmed = p_in.pran_cfg_show_params_loc_pmed;
     p_out.pran_cfg_show_lat_lng = p_in.pran_cfg_show_lat_lng;
+    p_out.pran_cfg_show_x_y = p_in.pran_cfg_show_x_y;
     p_out.pran_cfg_show_params_pro_tranp = p_in.pran_cfg_show_params_pro_tranp;
 
     //Salvando, so pega as propriedades, abrindo, redefinindo a Distancia...
@@ -294,6 +296,8 @@ export class AuthComponent implements OnInit {
           //Problemas cog:
           new_node['cog_rate'] = node.cog_rate;
           new_node['cog_vol'] = node.cog_vol;
+          //Problemas pmed:
+          new_node['pmed_custofixo'] = node.pmed_custofixo;
           //Problemas PT:
           new_node['pt_qtde_ofert_demand'] = node.pt_qtde_ofert_demand;
 

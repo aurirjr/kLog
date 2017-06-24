@@ -88,23 +88,24 @@
               <table class="tabela_prancheta table table-bordered" style="flex: 1;">
                 <thead>
                 <tr>
-                  <th>X</th>
-                  <th>Y</th>
+                  <th *ngIf="_P.p.pran_cfg_show_x_y">X</th>
+                  <th *ngIf="_P.p.pran_cfg_show_x_y">Y</th>
                   <th>Nome</th>
                   <th *ngIf="_P.p.pran_cfg_show_lat_lng">Lat</th>
                   <th *ngIf="_P.p.pran_cfg_show_lat_lng">Lng</th>
                   <th *ngIf="_P.p.pran_cfg_show_params_loc">Volume</th>
                   <th *ngIf="_P.p.pran_cfg_show_params_loc">Taxa</th>
+                  <th *ngIf="_P.p.pran_cfg_show_params_loc_pmed">CustoFixo</th>
                   <th *ngIf="_P.p.pran_cfg_show_params_pro_tranp">(PT) Qtd</th>
                 </tr>
                 </thead>
                 <tbody spellcheck="false">
                 <tr *ngFor="let node of _P.p.g.nodes">
-                  <td [ngStyle]="{'background' : (node.selected_blue) ? '#a0c0d8':(node.selected_orange) ? '#ffc4b1':'white'}">
+                  <td *ngIf="_P.p.pran_cfg_show_x_y" [ngStyle]="{'background' : (node.selected_blue) ? '#a0c0d8':(node.selected_orange) ? '#ffc4b1':'white'}">
                     <div contenteditable="true" style="min-width: 20px" (input)="corrigir_edicao($event.target)" (keydown.enter)="atualizar_node_prancheta(node, $event.target, 0)"
                          (blur)="atualizar_node_prancheta(node, $event.target, 0)" [textContent]="(node.dist_x.n+'').replace('.',',')+node.dist_x.und" (focus)="selectionar_editable()"></div>
                   </td>
-                  <td [ngStyle]="{'background' : (node.selected_orange) ? '#ffc4b1':(node.selected_blue) ? '#a0c0d8':'white'}">
+                  <td *ngIf="_P.p.pran_cfg_show_x_y" [ngStyle]="{'background' : (node.selected_orange) ? '#ffc4b1':(node.selected_blue) ? '#a0c0d8':'white'}">
                     <!--Com esse id, consigo facilmente identificar o elemento aqui na prancheta, e o node a que se refere...-->
                     <!--EDIT: ContentEditable parece algo muito bacana e util, mas é um pouco bixado... Entao parei de utilizar-->
                     <div contenteditable="true" style="min-width: 20px" (input)="corrigir_edicao($event.target)" (keydown.enter)="atualizar_node_prancheta(node, $event.target, 1)"
@@ -113,7 +114,7 @@
                     <!--Assim, nao dispara change detection! Ja com metodos que dao bind em dist_x.n_m, ai sim, dispara-->
                     <!--<input contenteditable="true" style="min-width: 20px" [ngModel]="node.dist_y | input_distancia" [input-distancia]="node.dist_y" name="teste">-->
                   </td>
-                  <td>
+                  <td [ngStyle]="{'background' : (node.selected_orange) ? '#ffc4b1':(node.selected_blue) ? '#a0c0d8':'white'}">
                     <div contenteditable="true" style="min-width: 20px" (input)="corrigir_edicao($event.target)" (keydown.enter)="atualizar_node_prancheta(node, $event.target, 2)"
                          (blur)="atualizar_node_prancheta(node, $event.target, 2)" [textContent]="node.nome" (focus)="selectionar_editable()"></div>
                   </td>
@@ -130,6 +131,10 @@
                   <td *ngIf="_P.p.pran_cfg_show_params_pro_tranp">
                     <div contenteditable="true" style="min-width: 20px" (input)="corrigir_edicao($event.target)" (keydown.enter)="atualizar_node_prancheta(node, $event.target, 5)"
                          (blur)="atualizar_node_prancheta(node, $event.target, 5)" [textContent]="(node.pt_qtde_ofert_demand+'').replace('.',',')" (focus)="selectionar_editable()"></div>
+                  </td>
+                  <td *ngIf="_P.p.pran_cfg_show_params_loc_pmed" >
+                    <div contenteditable="true" style="min-width: 20px" (input)="corrigir_edicao($event.target)" (keydown.enter)="atualizar_node_prancheta(node, $event.target, 6)"
+                         (blur)="atualizar_node_prancheta(node, $event.target, 6)" [textContent]="(node.pmed_custofixo+'').replace('.',',')" (focus)="selectionar_editable()"></div>
                   </td>
                 </tr>
                 </tbody>
@@ -282,15 +287,11 @@
                 <div class="input-group-addon">Power Factor</div>
                 <input class="input-group-addon form-control" type="text" style="background: white;" [(ngModel)]="_P.p.loc_power_factor" name="power_factor">
               </div>
-              <div class="input-group input-group-sm parametros_IG" style="box-sizing:border-box;">
-                <div class="input-group-addon">Qtd Centros</div>
-                <input class="input-group-addon form-control" type="text" style="background: white;" [(ngModel)]="_P.p.loc_qtd_centros" name="qtd_centros">
-              </div>
               <div class="input-group input-group-sm parametros_IG">
                 <div class="input-group-addon">Precisão</div>
                 <input class="input-group-addon form-control" type="text" style="background: white;" [(ngModel)]="_P.p.loc_precisao" name="precisao">
               </div>
-              <div class="input-group input-group-sm parametros_IG">
+              <!--<div class="input-group input-group-sm parametros_IG">
                 <div class="input-group-addon">Usar</div>
                 <select class="input-group-addon form-control" type="text" style="background: white; height: 24px" [(ngModel)]="_P.p.loc_usar_alg_tipo" name="usar_alg">
                   <option value="0">Um CG - Iteração</option>
@@ -298,16 +299,28 @@
                   <option value="2">Multi CG - Todas Combinações (Exato)</option>
                   <option value="3">P-Mediana</option>
                 </select>
-              </div>
+              </div>-->
               <button type="button" class="btn btn-outline-primary btn-sm" (click)="_SoLoc.GUI_calcular_CT_otimo()" style="margin-bottom: 5px"
                       [disabled]="!(selected_blue_count > 1) || fff_loc.invalid">
-                <div class="nodeball" style="background: #add8e6; margin-right: 5px;">2+</div><span style="vertical-align: middle; margin-top: -3px;">Calc CT Ótimo</span>
+                <div class="nodeball" style="background: #add8e6; margin-right: 5px;">2+</div><span style="vertical-align: middle; margin-top: -3px;">Calc COG</span>
               </button>
               <button type="button" class="btn btn-outline-primary btn-sm" (click)="_SoLoc.GUI_avaliar_CT_destino()"
                       [disabled]="!(selected_orange_count == 1 && selected_blue_count >= 1 ) || fff_loc.invalid">
                 <div class="nodeball" style="background: #add8e6;">1+</div>
                 <div class="nodeball" style="background: #ffa07a; margin-right: 5px;">1</div>
                 <span style="vertical-align: middle; margin-top: -3px;">Avaliar CT</span>
+              </button>
+              <div class="input-group input-group-sm parametros_IG" style="box-sizing:border-box; margin-top: 8px;">
+                <div class="input-group-addon">Qtd Centros</div>
+                <input class="input-group-addon form-control" type="text" style="background: white;" [(ngModel)]="_P.p.loc_qtd_centros" name="qtd_centros">
+              </div>
+              <button type="button" class="btn btn-outline-primary btn-sm" (click)="_SoLoc.GUI_calcular_CT_otimo()" style="margin-bottom: 5px"
+                      [disabled]="!(selected_blue_count > _P.p.loc_qtd_centros) || fff_loc.invalid">
+                <div class="nodeball" style="background: #add8e6; margin-right: 5px;">{{(_P.p.loc_qtd_centros*1)+1}}+</div><span style="vertical-align: middle; margin-top: -3px;">Calc MULTICOG</span>
+              </button>
+              <button type="button" class="btn btn-outline-primary btn-sm" (click)="_SoPMED.solver_pmed()" style="margin-bottom: 5px"
+                      [disabled]="!(selected_blue_count > _P.p.loc_qtd_centros) || fff_loc.invalid">
+                <div class="nodeball" style="background: #add8e6; margin-right: 5px;">{{(_P.p.loc_qtd_centros*1)+1}}+</div><span style="vertical-align: middle; margin-top: -3px;">Calc PMED</span>
               </button>
             </div>
           </app-accordion2>
@@ -460,12 +473,20 @@
         <!--Esses parametros sao guardados no problema para serem salvos junto com o problema-->
         <div style="display: flex; flex-direction: column; margin-bottom: 20px;">
           <div style="display: flex">
+            <div style="padding: 1px 4px 4px 4px"><input type="checkbox" [(ngModel)]="_P.p.pran_cfg_show_x_y"></div>
+            <div>Mostrar X/Y</div>
+          </div>
+          <div style="display: flex">
             <div style="padding: 1px 4px 4px 4px"><input type="checkbox" [(ngModel)]="_P.p.pran_cfg_show_lat_lng"></div>
             <div>Mostrar Lat/Lng</div>
           </div>
           <div style="display: flex">
             <div style="padding: 1px 4px 4px 4px"><input type="checkbox" [(ngModel)]="_P.p.pran_cfg_show_params_loc"></div>
             <div>Mostrar Parâmetros Localização - COG</div>
+          </div>
+          <div style="display: flex">
+            <div style="padding: 1px 4px 4px 4px"><input type="checkbox" [(ngModel)]="_P.p.pran_cfg_show_params_loc_pmed"></div>
+            <div>Mostrar Parâmetros Localização - PMED</div>
           </div>
           <div style="display: flex">
             <div style="padding: 1px 4px 4px 4px"><input type="checkbox" [(ngModel)]="_P.p.pran_cfg_show_params_pro_tranp"></div>

@@ -11,6 +11,7 @@ import {gMaps} from "./GoogleMaps";
 import {AcoesRapidas} from "app/funcoes_globais/AcoesRapidas";
 import {Solver_Localizacao} from "./solvers/Solver_Localizacao_COG";
 import {Solver_PT} from "./solvers/Solver_PT";
+import {Solver_PMED} from "./solvers/Solver_PMED";
 
 declare var $: any;
 declare var bootbox: any;
@@ -32,6 +33,7 @@ export class A implements OnInit, AfterViewInit {
   _SoLoc : Solver_Localizacao = new Solver_Localizacao();
   _SoDij : Solver_Dijkstra = new Solver_Dijkstra();
   _SoPT : Solver_PT = new Solver_PT();
+  _SoPMED : Solver_PMED = new Solver_PMED();
 
   //Referencia estatic da classe Node para ser usada na GUI
   //_static_Node = Node; //Nao to usando...
@@ -499,9 +501,9 @@ export class A implements OnInit, AfterViewInit {
     }
 
     //Removendo todas as selecoes...
-    for(let node of this._P.p.g.edges) {
-      node.set_select('selection_blue',false);
-      node.set_select('selection_orange',false);
+    for(let edge of this._P.p.g.edges) {
+      edge.set_select('selection_blue',false);
+      edge.set_select('selection_orange',false);
     }
 
     //Removendo todas as selecoes...
@@ -805,6 +807,17 @@ export class A implements OnInit, AfterViewInit {
         $(elem).text(node.pt_qtde_ofert_demand);
       } else {
         node.pt_qtde_ofert_demand = temp_number;
+      }
+    }
+    else if (tipo == 6) {
+      //Aqui basta ser numero valido
+      let temp_number = parseFloat(elem.textContent.replace(',','.'));
+
+      if(isNaN(temp_number)) {
+        //Simplesmente reaplicar o valor atual
+        $(elem).text(node.pmed_custofixo);
+      } else {
+        node.pmed_custofixo = temp_number;
       }
     }
   }

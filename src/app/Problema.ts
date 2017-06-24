@@ -46,9 +46,11 @@ export class Problema{
   }
 
   //COnfiguração da prancheta:
+  pran_cfg_show_x_y : boolean = true;
   pran_cfg_show_lat_lng : boolean = true;
   pran_cfg_show_params_loc : boolean = false;
   pran_cfg_show_params_pro_tranp : boolean = false;
+  pran_cfg_show_params_loc_pmed : boolean = false;
 
   //Problema de localização
   loc_qtd_centros : number = 1; //Default é 1
