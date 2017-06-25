@@ -150,6 +150,18 @@ export class AuthComponent implements OnInit {
       {
         //Adicionar somente se nao tinha...
         this.Problemas_Users.push(data.val());
+        //TEMP DEBUG PRA ABRIR AUTOMATICO:
+        if(data.val().titulo == "ECONOMIAS") {
+          this.abrir_pro(data.val()); //CARREGANDO
+          A.a.prancheta_onoff = true; //LIGANDO PRANCHETA
+          for(let node of A.a._P.p.g.nodes) node.set_select('selection_blue', true); //SELECIONANDO AZUL
+        }
+        /*if(data.val().titulo == "Problema MULTICOG") {
+          //A.a.turnon_gmaps(true); //Ligando gmaps... BUGA POR AKI...
+          this.abrir_pro(data.val()); //CARREGANDO
+          A.a.prancheta_onoff = true; //LIGANDO PRANCHETA
+          for(let node of A.a._P.p.g.nodes) node.set_select('selection_blue', true); //SELECIONANDO AZUL
+        }*/
       }
       this._CD.detectChanges();
     });
@@ -240,6 +252,12 @@ export class AuthComponent implements OnInit {
     p_out.loc_qtd_centros = p_in.loc_qtd_centros;
     p_out.loc_precisao = p_in.loc_precisao;
     p_out.loc_usar_alg_tipo = p_in.loc_usar_alg_tipo;
+
+    //Copiando parametros do problema de VRP
+    p_out.vrp_vol_max_rota = p_in.vrp_vol_max_rota;
+    //Salvando, so pega as propriedades, abrindo, redefinindo a Distancia...
+    if(s_a) p_out.vrp_dist_max_rota = Object.assign({},p_in.vrp_dist_max_rota);
+    else p_out.vrp_dist_max_rota = Object.assign(new Distancia(),p_in.vrp_dist_max_rota);
 
     //Salvando o outpur
     p_out.output_text = p_in.output_text;

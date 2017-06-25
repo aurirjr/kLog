@@ -58,6 +58,10 @@ export class Problema{
   loc_precisao : number = 0.00001; //Default na iteraço
   loc_usar_alg_tipo : number = 0; //Default é 0
 
+  //Problema VRP
+  vrp_vol_max_rota : number = 0; //Default é 0
+  vrp_dist_max_rota : Distancia = new Distancia()._n_und(0,'km'); //Default é 0
+
   //Salvando o texto de output no problema, pode ser bem util
   output_text = "";
 

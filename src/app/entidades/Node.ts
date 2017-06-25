@@ -77,9 +77,6 @@ export class Node {
 
   //----- PARAMS DE LOCALIZAÇÂO
 
-  public cg_vol : number = 0; //Default como 0
-  public cg_taxa : number = 0; //Default como 0
-
   public pmed_custofixo : number = 0;
 
   //----- PARAMS DE PROBLEMA TRANSPORT:

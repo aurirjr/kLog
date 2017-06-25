@@ -272,8 +272,6 @@
                 </button>
               </div>
             </div>
-
-
           </app-accordion2>
           <app-accordion2 [titulo]='"Parâmetros Localização"' [bottom]='"4px"'>...</app-accordion2>
         </app-accordion1>
@@ -336,6 +334,37 @@
                   <div class="nodeball" style="background: #add8e6;">2+</div>
                   <div class="nodeball" style="background: #ffa07a; margin-right: 5px;">2+</div>
                   <span style="vertical-align: middle; margin-top: -3px;">Pro. Transp.</span>
+                </button>
+                <div class="input-group input-group-sm parametros_IG" style="box-sizing:border-box; margin-top: 8px;">
+                  <div class="input-group-addon">Volume Max</div>
+                  <input class="input-group-addon form-control" type="text" style="background: white;" [(ngModel)]="_P.p.vrp_vol_max_rota" name="qtd_centros">
+                </div>
+                <div class="input-group input-group-sm parametros_IG" style="box-sizing:border-box;" [ngClass]="{'has-danger': max_dist_rota_inp.invalid && max_dist_rota_inp.dirty }">
+                  <div class="input-group-addon">Distancia Max</div>
+                  <input class="input-group-addon form-control" type="text" style="background: white;"
+                         [ngModel]="_P.p.vrp_dist_max_rota | input_distancia" [input-distancia]="_P.p.vrp_dist_max_rota" #max_dist_rota_inp="ngModel" name="max_dist_rota_inp">
+                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="_SoVRP.solver_vrp_savings()"
+                        [disabled]="!(selected_orange_count == 1 && selected_blue_count > 1 )">
+                  <div class="nodeball" style="background: #add8e6;">2+</div>
+                  <div class="nodeball" style="background: #ffa07a; margin-right: 5px;">1</div>
+                  <span style="vertical-align: middle; margin-top: -3px;">RV - Economias</span>
+                </button>
+                <div style="display: flex; margin-top: 5px; justify-content: center; align-items: center;" >
+                  <input type="checkbox" [(ngModel)] = "_SoVRP.passo_a_passo" name="passo_a_passo">
+                  <div style="margin-right: 5px; ">Passos</div>
+                  <button type="button" class="btn btn-outline-success btn-sm" (click)="_SoVRP.executar_passo_a_passo()" [disabled]="!_SoVRP.passo_a_passo">
+                    <span style="vertical-align: middle; margin-top: -3px;">Prox</span>
+                  </button>
+                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="_SoVRP.avaliar_distancia_total_arestas_laranjas()" style="margin-top: 5px;">
+                  <span style="vertical-align: middle; margin-top: -3px;">Total Dist Arestas</span>
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="_SoVRP.solver_vrp_varredura()" style="margin-top: 5px;"
+                        [disabled]="!(selected_orange_count == 1 && selected_blue_count > 1 )">
+                  <div class="nodeball" style="background: #add8e6;">2+</div>
+                  <div class="nodeball" style="background: #ffa07a; margin-right: 5px;">1</div>
+                  <span style="vertical-align: middle; margin-top: -3px;">RV - Varredura</span>
                 </button>
               </div>
             </div>

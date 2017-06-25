@@ -12,6 +12,7 @@ import {AcoesRapidas} from "app/funcoes_globais/AcoesRapidas";
 import {Solver_Localizacao} from "./solvers/Solver_Localizacao_COG";
 import {Solver_PT} from "./solvers/Solver_PT";
 import {Solver_PMED} from "./solvers/Solver_PMED";
+import {Solver_VRP} from "./solvers/Solver_VRP";
 
 declare var $: any;
 declare var bootbox: any;
@@ -34,6 +35,7 @@ export class A implements OnInit, AfterViewInit {
   _SoDij : Solver_Dijkstra = new Solver_Dijkstra();
   _SoPT : Solver_PT = new Solver_PT();
   _SoPMED : Solver_PMED = new Solver_PMED();
+  _SoVRP : Solver_VRP = new Solver_VRP();
 
   //Referencia estatic da classe Node para ser usada na GUI
   //_static_Node = Node; //Nao to usando...
