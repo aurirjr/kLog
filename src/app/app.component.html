@@ -298,9 +298,13 @@
                   <option value="3">P-Mediana</option>
                 </select>
               </div>-->
-              <button type="button" class="btn btn-outline-primary btn-sm" (click)="_SoLoc.GUI_calcular_CT_otimo()" style="margin-bottom: 5px"
+              <button type="button" class="btn btn-outline-primary btn-sm" (click)="_SoLoc.GUI_calcular_COG()" style="margin-bottom: 5px"
                       [disabled]="!(selected_blue_count > 1) || fff_loc.invalid">
                 <div class="nodeball" style="background: #add8e6; margin-right: 5px;">2+</div><span style="vertical-align: middle; margin-top: -3px;">Calc COG</span>
+              </button>
+              <button type="button" class="btn btn-outline-primary btn-sm" (click)="_SoLoc.GUI_Centroide()" style="margin-bottom: 5px"
+                      [disabled]="!(selected_blue_count > 1) || fff_loc.invalid">
+                <div class="nodeball" style="background: #add8e6; margin-right: 5px;">2+</div><span style="vertical-align: middle; margin-top: -3px;">Centroide</span>
               </button>
               <button type="button" class="btn btn-outline-primary btn-sm" (click)="_SoLoc.GUI_avaliar_CT_destino()"
                       [disabled]="!(selected_orange_count == 1 && selected_blue_count >= 1 ) || fff_loc.invalid">
@@ -312,7 +316,7 @@
                 <div class="input-group-addon">Qtd Centros</div>
                 <input class="input-group-addon form-control" type="text" style="background: white;" [(ngModel)]="_P.p.loc_qtd_centros" name="qtd_centros">
               </div>
-              <button type="button" class="btn btn-outline-primary btn-sm" (click)="_SoLoc.GUI_calcular_CT_otimo()" style="margin-bottom: 5px"
+              <button type="button" class="btn btn-outline-primary btn-sm" (click)="_SoLoc.GUI_multiCOG_clustering()" style="margin-bottom: 5px"
                       [disabled]="!(selected_blue_count > _P.p.loc_qtd_centros) || fff_loc.invalid">
                 <div class="nodeball" style="background: #add8e6; margin-right: 5px;">{{(_P.p.loc_qtd_centros*1)+1}}+</div><span style="vertical-align: middle; margin-top: -3px;">Calc MULTICOG</span>
               </button>
@@ -511,7 +515,7 @@
           </div>
           <div style="display: flex">
             <div style="padding: 1px 4px 4px 4px"><input type="checkbox" [(ngModel)]="_P.p.pran_cfg_show_params_loc"></div>
-            <div>Mostrar Parâmetros Localização - COG</div>
+            <div>Mostrar Parâmetros Localização</div>
           </div>
           <div style="display: flex">
             <div style="padding: 1px 4px 4px 4px"><input type="checkbox" [(ngModel)]="_P.p.pran_cfg_show_params_loc_pmed"></div>

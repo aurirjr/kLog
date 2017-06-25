@@ -3,8 +3,9 @@
 }
 /*Esse XX faz a referencia necessaria pro powershell alterar a cada execução de IncrementVersion*/
 .versioning:after {
-  content: '43'; /*XX*/
+  content: '44'; /*XX*/
 }
+
 
 
 
