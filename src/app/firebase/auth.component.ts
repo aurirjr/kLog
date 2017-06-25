@@ -151,11 +151,11 @@ export class AuthComponent implements OnInit {
         //Adicionar somente se nao tinha...
         this.Problemas_Users.push(data.val());
         //TEMP DEBUG PRA ABRIR AUTOMATICO:
-        if(data.val().titulo == "ECONOMIAS") {
+        /*if(data.val().titulo == "VARREDURA") {
           this.abrir_pro(data.val()); //CARREGANDO
           A.a.prancheta_onoff = true; //LIGANDO PRANCHETA
           for(let node of A.a._P.p.g.nodes) node.set_select('selection_blue', true); //SELECIONANDO AZUL
-        }
+        }*/
         /*if(data.val().titulo == "Problema MULTICOG") {
           //A.a.turnon_gmaps(true); //Ligando gmaps... BUGA POR AKI...
           this.abrir_pro(data.val()); //CARREGANDO

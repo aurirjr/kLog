@@ -437,28 +437,65 @@ export class Solver_VRP
     this.nodes_destino.sort(function(a, b) { return b['vrp_varredura_angulo'] - a['vrp_varredura_angulo']; });
 
     //Realizando a varredura!!!
+
+    //A distancia começa com a do centro ao primeiro node...
+    var distancia_acumulada_rota : number = this.DIST(this.nodes_destino[0],this.node_origem);
+    var volume_acumulado_rota : number = 0; //Começa 0
+
+    //Ja conecto o primeiro node a origem...
+    this.nodes_destino[0]['vrp_conectados'][0] = this.node_origem;
+
+    //ToDo: ESTOU DESCONSIDERANDO AKI NODES QUE, POR SI SO, JA ESTOURAM O LIMITE DE DISTANCIA EM UMA UNICA ROTA, OU VOLUME... SUPONDO TODOS MENORES...
+
     for(var k = 0; k < this.nodes_destino.length; k++) {
       //DEBUG - Mostrar odenamento de angulos:
       //console.log(this.nodes_destino[k].nome + " Angulo: "+ this.nodes_destino[k]['vrp_varredura_angulo'])
 
-      //Inicio, primeiro:
-      if(k==0) {
-        this.nodes_destino[k]['vrp_conectados'][0] = this.node_origem;
-        this.nodes_destino[k]['vrp_conectados'][1] = this.nodes_destino[k+1];
-      } // Fim, ultimo node:
-      else if(k==this.nodes_destino.length - 1) {
-        this.nodes_destino[k]['vrp_conectados'][0] = this.nodes_destino[k-1];
+      //Quando for o ultimo, finalizar a rota indo pra origem, nao tem o que fazer:
+      if(k==this.nodes_destino.length - 1) {
         this.nodes_destino[k]['vrp_conectados'][1] = this.node_origem;
-      } // Quaisquer nodes intermediarios:
-      else {
-        this.nodes_destino[k]['vrp_conectados'][0] = this.nodes_destino[k-1];
-        this.nodes_destino[k]['vrp_conectados'][1] = this.nodes_destino[k+1];
       }
+      // Quaisquer nodes intermediarios:
+      else {
 
-      //AGORA JA PODE IMPRIMIR:
-      this.conectar_nodes_gui(this.nodes_destino);
+        //Quando chega aqui, tem uma distancia e um volume acumulados até esse node...
+        //Eu preciso decidir se o node k+1, com o retorno a origem, cabe na rota... Pq se nao couber, eu paro aki, lingadondo com o centro...
+        //E ligo o centro ao k+1 para ele continuar, iniciando novamente a distancia_acumulada...
+        if(
+          //Restricoes de distancia:
+          ((A.a._P.p.vrp_dist_max_rota.n_m == 0) || (distancia_acumulada_rota + this.DIST(this.nodes_destino[k],this.nodes_destino[k+1]) + this.DIST(this.nodes_destino[k+1],this.node_origem) <= A.a._P.p.vrp_dist_max_rota.n_m))
+          //Restricoes de volumes
+          && ((A.a._P.p.vrp_vol_max_rota == 0) || (volume_acumulado_rota + this.nodes_destino[k].cog_vol + this.nodes_destino[k+1].cog_vol <= A.a._P.p.vrp_vol_max_rota ))
+        ) {
+          //Nesse caso, pode alterar a distancia acumulada até o proximo, e ir pro proximo
+          distancia_acumulada_rota += this.DIST(this.nodes_destino[k],this.nodes_destino[k+1]);
 
+          //Adicionando esse volume pra ser considerado no proximo:
+          volume_acumulado_rota += this.nodes_destino[k].cog_vol;
+
+          //Esse vai para o k+1
+          this.nodes_destino[k]['vrp_conectados'][1] = this.nodes_destino[k+1];
+          //O k+1 vem desse...
+          this.nodes_destino[k+1]['vrp_conectados'][0] = this.nodes_destino[k];
+        } else {
+          //Nesse caso, a distancia acumulada vai ser do centro pro proximo, pq esse aqui ja deu, vai pro centro
+          distancia_acumulada_rota = this.DIST(this.node_origem,this.nodes_destino[k+1]);
+          //Zerando o volume acumulado pro proximo:
+          volume_acumulado_rota = 0;
+
+          //Esse vai para a origem...
+          this.nodes_destino[k]['vrp_conectados'][1] = this.node_origem;
+          //O k+1 vai vir da origem...
+          this.nodes_destino[k+1]['vrp_conectados'][0] = this.node_origem;
+        }
+      }
     }
 
+    //AGORA JA PODE IMPRIMIR:
+    this.conectar_nodes_gui(this.nodes_destino);
+  }
+
+  public DIST(a : Node, b : Node) : number {
+    return Math.pow(Math.floor(Math.pow(a.dist_x.n_m - b.dist_x.n_m, 2) + Math.pow(a.dist_y.n_m - b.dist_y.n_m, 2)),1/2);
   }
 }
